@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="static/style.css">
+  </head>
+  <body>
+    <header><h1>Conway's Game of Life</h1></header>
+
+    <section id="controls">
+      <form id="command-form">
+        <textarea id="starting-grid" rows="10" cols="10" id="pattern" wrap="off"
+            autocomplete="off" spellcheck="false" autocapitalize="none" placeholder="Enter your
+            starting grid here.  Use 'x' for living cells and '.' for dead cells. Each line will
+            become a row in the grid.">{{ default_grid | trim }}</textarea>
+        <div>
+          <button type="submit" id="submit-pattern" value="restart">Start / Restart</button>
+          <select id="command">
+            <option value="toggle-playback">Play/Pause</option>
+            <option value="step">Next Frame</option>
+            <option value="scroll (0, -5)">Scroll Up by 5</option>
+            <option value="scroll (0, 5)">Scroll Down by 5</option>
+            <option value="scroll (-5, 0)">Scroll Left by 5</option>
+            <option value="scroll (5, 0)">Scroll Right by 5</option>
+          </select>
+          <button type="submit" id="submit-command">Submit</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="game">
+      <div id="status-box">
+        <span id="status-label">Status:</span> <span id="status">Connecting...</span>
+      </div>
+      <pre id="game-output"></pre>
+    </section>
+
+    <script src="static/index.js"></script>
+  </body>
+</html>

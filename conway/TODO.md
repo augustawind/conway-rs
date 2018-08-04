@@ -1,0 +1,8 @@
+- implement fixed view
+- implement auto view (favor fixed view, then moving view)
+- implement UI
+- add controls to:
+  - play/pause
+  - step (1 tick at a time)
+  - scroll
+  - change view
