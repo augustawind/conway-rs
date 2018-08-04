@@ -58,11 +58,11 @@ where
             possible_values(VIEW_CHOICES)
             "viewing mode")
         (@arg width: -w --width display_order(4)
-            +takes_value
-            "viewport width [default: auto]")
+            default_value[auto]
+            "viewport width")
         (@arg height: -h --height display_order(4)
-            +takes_value
-            "viewport height [default: auto]")
+            default_value[auto]
+            "viewport height")
         (@arg live_char: -o --("live-char") display_order(5)
             default_value(DEFAULT_CHAR_ALIVE)
             env[CONWAY_LIVE_CHAR]
@@ -110,8 +110,14 @@ impl ConfigReader {
 
                 view: matches.value_of("view").unwrap().parse()?,
 
-                width: matches.value_of("width").map(str::parse).transpose()?,
-                height: matches.value_of("height").map(str::parse).transpose()?,
+                width: matches
+                    .value_of("width")
+                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
+                    .transpose()?,
+                height: matches
+                    .value_of("height")
+                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
+                    .transpose()?,
 
                 char_alive: matches.value_of("live_char").unwrap().parse()?,
                 char_dead: matches.value_of("dead_char").unwrap().parse()?,
