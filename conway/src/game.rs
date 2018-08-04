@@ -85,8 +85,6 @@ impl Game {
         let (origin, Point(x1, y1)) = grid.calculate_bounds();
         let (width, height) = ((x1 - origin.0 + 1) as u64, (y1 - origin.1 + 1) as u64);
 
-        // FIXME: implement Option instead of relying on 0
-        // set min dimensions to at least the starting Grid's natural size
         let viewport = Viewport {
             origin,
             width: opts.width.unwrap_or(width),
@@ -204,36 +202,36 @@ fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
 mod test {
     use super::*;
 
-    // FIXME: implement Option for width/height to achieve this
-    // #[test]
-    // fn test_min_size() {
-    //     let game = Game::new(
-    //         Grid::new(vec![Point(0, 0), Point(5, 5)]),
-    //         Settings {
-    //             min_width: 8,
-    //             min_height: 8,
-    //             ..Default::default()
-    //         },
-    //     );
-    //     assert_eq!((game.opts.min_width, game.opts.min_height), (8, 8),);
-    // }
+    #[test]
+    fn test_size_provided() {
+        let game = Game::new(
+            Grid::new(vec![Point(0, 0), Point(5, 5)]),
+            Settings {
+                width: Some(8),
+                height: Some(8),
+                ..Default::default()
+            },
+        );
+        assert_eq!(game.viewport.width, 8);
+        assert_eq!(game.viewport.height, 8);
+    }
 
-    // #[test]
-    // fn test_min_size_override() {
-    //     let game = Game::new(
-    //         Grid::new(vec![Point(0, 0), Point(5, 5)]),
-    //         Settings {
-    //             min_width: 3,
-    //             min_height: 3,
-    //             ..Default::default()
-    //         },
-    //     );
-    //     assert_eq!(
-    //         (game.opts.min_width, game.opts.min_height),
-    //         (6, 6),
-    //         "natural size should override given min size if natural > given"
-    //     );
-    // }
+    #[test]
+    fn test_size_auto() {
+        let game = Game::new(
+            Grid::new(vec![Point(0, 0), Point(5, 5)]),
+            Settings {
+                width: None,
+                height: None,
+                ..Default::default()
+            },
+        );
+        assert_eq!(
+            (game.viewport.width, game.viewport.height),
+            (6, 6),
+            "natural size should override given min size if natural > given"
+        );
+    }
 
     #[test]
     fn test_survives_blinker() {
