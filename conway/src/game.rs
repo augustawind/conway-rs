@@ -202,6 +202,7 @@ fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
 mod test {
     use super::*;
 
+    // Viewport width/height should be taken from Settings if given.
     #[test]
     fn test_size_provided() {
         let game = Game::new(
@@ -216,6 +217,7 @@ mod test {
         assert_eq!(game.viewport.height, 8);
     }
 
+    // Viewport width/height should be derived from the Grid if not given in Settings.
     #[test]
     fn test_size_auto() {
         let game = Game::new(
@@ -226,15 +228,12 @@ mod test {
                 ..Default::default()
             },
         );
-        assert_eq!(
-            (game.viewport.width, game.viewport.height),
-            (6, 6),
-            "natural size should override given min size if natural > given"
-        );
+        assert_eq!(game.viewport.width, 6);
+        assert_eq!(game.viewport.height, 6);
     }
 
     #[test]
-    fn test_survives_blinker() {
+    fn test_survives() {
         let game = Game::new(
             Grid::new(vec![Point(1, 0), Point(1, 1), Point(1, 2)]),
             Default::default(),
