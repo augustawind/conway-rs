@@ -30,6 +30,20 @@ impl FromStr for View {
     }
 }
 
+impl fmt::Display for View {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                View::Centered => "centered",
+                View::Fixed => "fixed",
+                View::Follow => "follow",
+            }
+        )
+    }
+}
+
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Viewport {
     origin: Point,
