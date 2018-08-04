@@ -7,7 +7,7 @@ use num_integer::Integer;
 use config::ConfigReader;
 pub use config::Settings;
 use grid::{Grid, Point};
-use {Error as AppError, Result as AppResult};
+use {Error, Result};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum View {
@@ -17,14 +17,14 @@ pub enum View {
 }
 
 impl FromStr for View {
-    type Err = AppError;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         match s {
             "centered" => Ok(View::Centered),
             "fixed" => Ok(View::Fixed),
             "follow" => Ok(View::Follow),
-            s => Err(From::from(format!("'{}' is not a valid choice", s))),
+            s => bail!("'{}' is not a valid choice", s),
         }
     }
 }
@@ -72,7 +72,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn load() -> AppResult<Game> {
+    pub fn load() -> Result<Game> {
         let ConfigReader { settings, pattern } = ConfigReader::from_env()?;
         let grid = pattern.parse()?;
         Ok(Game::new(grid, settings))

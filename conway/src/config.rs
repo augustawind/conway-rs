@@ -9,7 +9,7 @@ use std::time::Duration;
 use clap::ArgMatches;
 
 use game::View;
-use Result as AppResult;
+use Result;
 
 static SAMPLE_DIR: &str = "./sample_patterns";
 static SAMPLE_CHOICES: &[&str] = &["beacon", "glider", "blinker", "toad"];
@@ -83,11 +83,11 @@ pub struct Settings {
 }
 
 impl ConfigReader {
-    pub fn from_env() -> AppResult<ConfigReader> {
+    pub fn from_env() -> Result<ConfigReader> {
         ConfigReader::from_args(env::args_os())
     }
 
-    pub fn from_args<I, T>(args: I) -> AppResult<ConfigReader>
+    pub fn from_args<I, T>(args: I) -> Result<ConfigReader>
     where
         I: IntoIterator<Item = T>,
         T: Into<OsString> + Clone,

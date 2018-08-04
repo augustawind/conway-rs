@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::str::FromStr;
 
 pub use point::Point;
-use Error as AppError;
+use {Error, Result};
 
 pub const READ_CHAR_ALIVE: char = 'x';
 pub const READ_CHAR_DEAD: char = '.';
@@ -115,9 +115,9 @@ impl Grid {
 
 /// Parse a Grid from a block of structured text.
 impl FromStr for Grid {
-    type Err = AppError;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         let mut cells = Vec::new();
 
         for (y, line) in s

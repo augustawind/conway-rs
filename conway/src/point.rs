@@ -3,7 +3,7 @@ use std::num::ParseIntError;
 use std::ops;
 use std::str::FromStr;
 
-use {Error as AppError, ErrorKind};
+use {Error, ErrorKind, Result};
 
 /// A Point is a point on the `Grid`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -39,9 +39,9 @@ impl fmt::Display for Point {
 }
 
 impl FromStr for Point {
-    type Err = AppError;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         let (lparen, rest) = s.trim().split_at(1);
         if lparen != "(" {
             bail!(ErrorKind::ParsePoint(format!(
