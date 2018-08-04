@@ -1,9 +1,6 @@
+#![macro_use]
 #![feature(transpose_result)]
 #![recursion_limit = "1024"]
-
-#[macro_use]
-#[cfg(test)]
-extern crate maplit;
 
 #[macro_use]
 extern crate clap;
@@ -11,8 +8,12 @@ extern crate clap;
 extern crate error_chain;
 #[macro_use]
 extern crate lazy_static;
-
+#[macro_use]
+extern crate maplit;
 extern crate num_integer;
+
+#[macro_use]
+mod macros;
 
 pub mod config;
 pub mod game;

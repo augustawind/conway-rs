@@ -1,23 +1,33 @@
+use std::collections::HashMap;
 use std::default::Default;
 use std::env;
 use std::ffi::OsString;
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
+use std::fs::read_to_string;
+use std::path::PathBuf;
 use std::time::Duration;
 
 use clap::ArgMatches;
 
 use game::View;
-use Result;
+use {ErrorKind, Result};
 
-static SAMPLE_DIR: &str = "./sample_patterns";
-static SAMPLE_CHOICES: &[&str] = &["beacon", "glider", "blinker", "toad"];
-static VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
+const VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
+const DEFAULT_CHAR_ALIVE: &str = "#";
+const DEFAULT_CHAR_DEAD: &str = "-";
 
 lazy_static! {
-    static ref DEFAULT_CHAR_ALIVE: &'static str = "#";
-    static ref DEFAULT_CHAR_DEAD: &'static str = "-";
+    static ref SAMPLE_DIR: PathBuf = PathBuf::from("./sample_patterns");
+    pub static ref SAMPLE_PATTERNS: HashMap<&'static str, String> = hashmap!{
+        "beacon" => string_from_file!(SAMPLE_DIR.join("beacon")),
+        "blinker" => string_from_file!(SAMPLE_DIR.join("blinker")),
+        "glider" => string_from_file!(SAMPLE_DIR.join("glider")),
+        "toad" => string_from_file!(SAMPLE_DIR.join("toad")),
+    };
+    static ref SAMPLE_CHOICES: Vec<&'static str> = {
+        let mut keys: Vec<&str> = SAMPLE_PATTERNS.keys().map(|k| *k).collect();
+        keys.sort();
+        keys
+    };
     pub static ref CHAR_ALIVE: char = DEFAULT_CHAR_ALIVE.parse().unwrap();
     pub static ref CHAR_DEAD: char = DEFAULT_CHAR_DEAD.parse().unwrap();
 }
@@ -37,7 +47,7 @@ where
                 "load a pattern from a file")
             (@arg sample: -S --sample display_order(1)
                 default_value[glider]
-                possible_values(SAMPLE_CHOICES)
+                possible_values(SAMPLE_CHOICES.as_ref())
                 "load a sample pattern")
         )
         (@arg delay: -d --delay display_order(2)
@@ -54,11 +64,11 @@ where
             +takes_value
             "viewport height [default: auto]")
         (@arg live_char: -o --("live-char") display_order(5)
-            default_value(*DEFAULT_CHAR_ALIVE)
+            default_value(DEFAULT_CHAR_ALIVE)
             env[CONWAY_LIVE_CHAR]
             "character used to render live cells")
         (@arg dead_char: -x --("dead-char") display_order(5)
-            default_value(*DEFAULT_CHAR_DEAD)
+            default_value(DEFAULT_CHAR_DEAD)
             env[CONWAY_DEAD_CHAR]
             "character used to render dead cells")
     ).get_matches_from(args)
@@ -107,17 +117,17 @@ impl ConfigReader {
                 char_dead: matches.value_of("dead_char").unwrap().parse()?,
             },
             pattern: {
-                let path = if let Some(file) = matches.value_of("file") {
-                    Path::new(file).to_path_buf()
+                if let Some(file) = matches.value_of("file") {
+                    read_to_string(file)?
                 } else {
-                    let file = matches.value_of("sample").unwrap();
-                    Path::new(SAMPLE_DIR).join(file)
-                };
-
-                let mut f = File::open(path)?;
-                let mut pattern = String::new();
-                f.read_to_string(&mut pattern)?;
-                pattern
+                    let name = matches.value_of("sample").unwrap();
+                    SAMPLE_PATTERNS
+                        .get(name)
+                        .ok_or_else(|| {
+                            ErrorKind::Msg(format!("no sample pattern with name '{}'", name))
+                        })?
+                        .to_owned()
+                }
             },
         };
 

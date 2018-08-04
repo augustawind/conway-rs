@@ -1,3 +1,4 @@
+use std::fmt;
 use std::mem;
 use std::str::FromStr;
 use std::thread;
