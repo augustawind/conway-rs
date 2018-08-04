@@ -9,7 +9,7 @@ use std::time::Duration;
 use clap::ArgMatches;
 
 use game::View;
-use AppResult;
+use Result as AppResult;
 
 static SAMPLE_DIR: &str = "./sample_patterns";
 static SAMPLE_CHOICES: &[&str] = &["beacon", "glider", "blinker", "toad"];

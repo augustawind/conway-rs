@@ -7,7 +7,7 @@ use num_integer::Integer;
 use config::ConfigReader;
 pub use config::Settings;
 use grid::{Grid, Point};
-use {AppError, AppResult};
+use {Error as AppError, Result as AppResult};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum View {

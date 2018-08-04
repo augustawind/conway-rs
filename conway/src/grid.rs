@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::str::FromStr;
 
 pub use point::Point;
-use AppError;
+use Error as AppError;
 
 pub const READ_CHAR_ALIVE: char = 'x';
 pub const READ_CHAR_DEAD: char = '.';

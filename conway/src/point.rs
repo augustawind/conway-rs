@@ -3,7 +3,7 @@ use std::num::ParseIntError;
 use std::ops;
 use std::str::FromStr;
 
-use super::AppError;
+use {Error as AppError, ErrorKind};
 
 /// A Point is a point on the `Grid`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -44,14 +44,14 @@ impl FromStr for Point {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (lparen, rest) = s.trim().split_at(1);
         if lparen != "(" {
-            return Err(AppError::ParsePoint(format!(
+            bail!(ErrorKind::ParsePoint(format!(
                 "unexpected character '{}'",
                 lparen
             )));
         }
         let (rest, rparen) = rest.split_at(rest.len() - 1);
         if rparen != ")" {
-            return Err(AppError::ParsePoint(format!(
+            bail!(ErrorKind::ParsePoint(format!(
                 "unexpected character '{}'",
                 rparen
             )));
@@ -59,16 +59,16 @@ impl FromStr for Point {
         let mut nums = rest.split(',');
         let x: i64 = nums
             .next()
-            .ok_or_else(|| AppError::ParsePoint(format!("missing value for x")))?
+            .ok_or_else(|| ErrorKind::ParsePoint(format!("missing value for x")))?
             .trim()
             .parse()
-            .map_err(|e: ParseIntError| AppError::ParsePoint(e.to_string()))?;
+            .map_err(|e: ParseIntError| ErrorKind::ParsePoint(e.to_string()))?;
         let y: i64 = nums
             .next()
-            .ok_or_else(|| AppError::ParsePoint(format!("missing value for y")))?
+            .ok_or_else(|| ErrorKind::ParsePoint(format!("missing value for y")))?
             .trim()
             .parse()
-            .map_err(|e: ParseIntError| AppError::ParsePoint(e.to_string()))?;
+            .map_err(|e: ParseIntError| ErrorKind::ParsePoint(e.to_string()))?;
         Ok(Point(x, y))
     }
 }

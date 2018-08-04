@@ -5,8 +5,9 @@ authors = ["Dustin Rohde <dustin.rohde@gmail.com>"]
 
 [dependencies]
 clap = "2.32.0"
-num-integer = "0.1.39"
+error-chain = "0.12.*"
 lazy_static = "1.0.*"
+num-integer = "0.1.39"
 
 [dev-dependencies]
 maplit = "1.0.1"
