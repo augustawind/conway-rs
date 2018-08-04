@@ -9,7 +9,7 @@ use std::time::Duration;
 use clap::ArgMatches;
 
 use game::View;
-use {ErrorKind, Result};
+use Result;
 
 const VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
 const DEFAULT_CHAR_ALIVE: &str = "#";
@@ -17,11 +17,11 @@ const DEFAULT_CHAR_DEAD: &str = "-";
 
 lazy_static! {
     static ref SAMPLE_DIR: PathBuf = PathBuf::from("./sample_patterns");
-    pub static ref SAMPLE_PATTERNS: HashMap<&'static str, String> = hashmap!{
-        "beacon" => string_from_file!(SAMPLE_DIR.join("beacon")),
-        "blinker" => string_from_file!(SAMPLE_DIR.join("blinker")),
-        "glider" => string_from_file!(SAMPLE_DIR.join("glider")),
-        "toad" => string_from_file!(SAMPLE_DIR.join("toad")),
+    pub static ref SAMPLE_PATTERNS: HashMap<&'static str, &'static str> = hashmap!{
+        "beacon" => include_str!("../sample_patterns/blinker"),
+        "blinker" => include_str!("../sample_patterns/blinker"),
+        "glider" => include_str!("../sample_patterns/glider"),
+        "toad" => include_str!("../sample_patterns/toad"),
     };
     static ref SAMPLE_CHOICES: Vec<&'static str> = {
         let mut keys: Vec<&str> = SAMPLE_PATTERNS.keys().map(|k| *k).collect();
@@ -120,13 +120,10 @@ impl ConfigReader {
                 if let Some(file) = matches.value_of("file") {
                     read_to_string(file)?
                 } else {
-                    let name = matches.value_of("sample").unwrap();
                     SAMPLE_PATTERNS
-                        .get(name)
-                        .ok_or_else(|| {
-                            ErrorKind::Msg(format!("no sample pattern with name '{}'", name))
-                        })?
-                        .to_owned()
+                        .get(matches.value_of("sample").unwrap())
+                        .expect("unknown sample pattern")
+                        .to_string()
                 }
             },
         };

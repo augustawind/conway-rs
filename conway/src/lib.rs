@@ -12,9 +12,6 @@ extern crate lazy_static;
 extern crate maplit;
 extern crate num_integer;
 
-#[macro_use]
-mod macros;
-
 pub mod config;
 pub mod game;
 pub mod grid;
