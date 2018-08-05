@@ -142,7 +142,7 @@ impl ws::Handler for Server {
             }
             Some("new-grid") => {
                 let pattern = args.next().unwrap_or_default();
-                *game = Server::new_game(pattern.to_owned());
+                game.reset_grid(pattern.parse().unwrap());
                 self.out.send(Message::new().pattern(game.draw()))
             }
             Some(arg) => self.alert(format!(

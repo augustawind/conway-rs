@@ -98,12 +98,11 @@ impl Game {
         swap.clear();
 
         let (origin, Point(x1, y1)) = grid.calculate_bounds();
-        let (width, height) = ((x1 - origin.0 + 1) as u64, (y1 - origin.1 + 1) as u64);
 
         let viewport = Viewport {
             origin,
-            width: opts.width.unwrap_or(width),
-            height: opts.height.unwrap_or(height),
+            width: opts.width.unwrap_or((x1 - origin.0 + 1) as u64),
+            height: opts.height.unwrap_or((y1 - origin.1 + 1) as u64),
             scroll: Point(0, 0),
         };
 
@@ -113,6 +112,10 @@ impl Game {
             opts,
             viewport,
         }
+    }
+
+    pub fn reset_grid(&mut self, grid: Grid) {
+        self.grid = grid;
     }
 
     pub fn iter(&mut self) -> GameIter {
