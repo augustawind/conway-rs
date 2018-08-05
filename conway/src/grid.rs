@@ -132,7 +132,7 @@ impl FromStr for Grid {
                     cells.push(Point(x as i64, y as i64));
                 // Dead Points are ignored, and any other symbol is an error.
                 } else if ch != READ_CHAR_DEAD {
-                    return Err(From::from(format!("unknown character: '{}'", ch)));
+                    bail!("unknown character: '{}'", ch);
                 }
             }
         }

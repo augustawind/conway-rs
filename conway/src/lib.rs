@@ -39,4 +39,20 @@ mod errors {
             IO(::std::io::Error);
         }
     }
+
+    impl Error {
+        pub fn write_err_chain<T: ::std::io::Write>(&self, output: &mut T) {
+            let errmsg = "Well, shit. Encountered an error while trying to write another error. \
+                          Good luck trying to figure it out!";
+            writeln!(output, "error: {}", self).expect(errmsg);
+
+            for err in self.iter().skip(1) {
+                writeln!(output, "caused by: {}", err).expect(errmsg);
+            }
+
+            if let Some(backtrace) = self.backtrace() {
+                writeln!(output, "backtrace: {:?}", backtrace).expect(errmsg);
+            }
+        }
+    }
 }
