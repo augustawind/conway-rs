@@ -73,11 +73,11 @@
 			</div>
 			<div class="one column">
 				<button id="btn-scroll-up" class="fa fa-chevron-circle-up"
-						type="button" value="scroll (2, 0)"></button>
+						type="button" value="scroll (0, -2)"></button>
 			</div>
 			<div class="one column">
 				<button id="btn-scroll-down" class="fa fa-chevron-circle-down"
-					 type="button" value="scroll (0, -2)"></button>
+					 type="button" value="scroll (0, 2)"></button>
 			</div>
 			<div class="one column">
 				<button id="btn-scroll-left" class="fa fa-chevron-circle-left"
@@ -85,7 +85,7 @@
 			</div>
 			<div class="one column">
 				<button id="btn-scroll-right" class="fa fa-chevron-circle-right"
-						type="button" value="scroll (0, 2)"></button>
+						type="button" value="scroll (2, 0)"></button>
 			</div>
 		</div>
 
