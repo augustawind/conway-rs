@@ -113,10 +113,12 @@ impl ws::Handler for Server {
                 self.next_turn(&mut game)
             }
             Some("step") => {
-                if !self.paused {
+                if self.paused {
+                    self.next_turn(&mut game)
+                } else {
                     self.paused = true;
+                    Ok(())
                 }
-                self.next_turn(&mut game)
             }
             Some("play") => {
                 let was_paused = self.paused;
