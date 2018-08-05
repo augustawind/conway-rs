@@ -71,8 +71,7 @@ impl<'a> Iterator for GameIter<'a> {
         if self.0.is_over() {
             return None;
         }
-        self.0.tick();
-        thread::sleep(self.0.opts.delay);
+        self.0.tick_with_delay();
         Some(self.0.draw())
     }
 }
@@ -202,6 +201,12 @@ impl Game {
         }
         self.grid.clear();
         mem::swap(&mut self.grid, &mut self.swap);
+    }
+
+    /// Call `tick`, then sleep for `self.opts.delay`.
+    pub fn tick_with_delay(&mut self) {
+        self.tick();
+        thread::sleep(self.opts.delay);
     }
 
     /// Survives returns whether the cell at the given Point survives an application of The Rules.
