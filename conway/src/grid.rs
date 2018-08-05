@@ -25,7 +25,7 @@ impl Grid {
      * Points
      */
 
-    /// Return the number of living Points that are adjacent to the given Point.
+    /// Return the number of living Cells that are adjacent to the given Point.
     pub fn live_neighbors(&self, point: &Point) -> usize {
         self.adjacent_cells(point)
             .iter()
@@ -33,7 +33,7 @@ impl Grid {
             .count()
     }
 
-    /// Return the set of all Points in the Grid that should be evaluated for survival.
+    /// Return the set of all Cells that should be evaluated for survival.
     pub fn active_cells(&self) -> HashSet<Point> {
         self.cells
             .iter()

@@ -156,7 +156,7 @@ impl Game {
         }
     }
 
-    // Return a Viewport starting at the lowest x and y values of live Cells present in the Game.
+    /// Return a Viewport starting at the lowest x and y values of live Cells present in the Game.
     pub fn viewport_fixed(&self) -> (Point, Point) {
         let Point(x0, y0) = self.viewport.origin + self.viewport.scroll;
         let p1 = Point(
@@ -166,7 +166,7 @@ impl Game {
         (Point(x0, y0), p1)
     }
 
-    // Return a Viewport centered around existing live Cells.
+    /// Return a Viewport centered around existing live Cells.
     pub fn viewport_centered(&self) -> (Point, Point) {
         let (Point(x0, y0), Point(x1, y1)) = self.grid.calculate_bounds();
         let (width, height) = (x1 - x0 + 1, y1 - y0 + 1);
@@ -286,10 +286,6 @@ mod test {
     mod viewport {
         use super::*;
 
-        // Test `Game.scroll`.
-        #[test]
-        fn test_scroll() {}
-
         // Test `Game.viewport_fixed`.
         #[test]
         fn test_viewport_fixed_1() {
@@ -370,6 +366,14 @@ mod test {
                 // y0[2] + 0 = 2 // y1[4] + 0 = 4
                 (Point(-1, 2), Point(8, 4)),
             );
+        }
+
+        // Test `Game.scroll`.
+        #[test]
+        fn test_scroll() {
+            let mut game = mk_game(vec![Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
+            game.scroll(2, -4);
+            assert_eq!(game.viewport_fixed(), (Point(1, -7), Point(5, -3)));
         }
 
         // Test `Game.center_viewport`.
