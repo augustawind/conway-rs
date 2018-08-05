@@ -1,49 +1,94 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ title }}</title>
+<html lang="en">
+<head>
 
-    <link rel="stylesheet" href="static/css/normalize.css">
-    <link rel="stylesheet" href="static/css/skeleton.css">
-    <link rel="stylesheet" href="static/style.css">
+	<!-- basic page needs
+	–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<meta charset="utf8">
+	<title>{{ title }}</title>
+	<meta name="description" content="A web app that allows the user to configure and run a Conway's Game of Life simulation.">
 
-    <link rel="icon" type="image/png" href="static/images/favicon.png">
-  </head>
-  <body>
-    <header><h1>Conway's Game of Life</h1></header>
+  <!-- mobile-specific meta
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <section id="controls">
-      <form id="grid-form">
-        <textarea id="grid-field" rows="20" cols="20" wrap="off"
-            autocomplete="off" spellcheck="false" autocapitalize="none" placeholder="Enter your
-            starting grid here.  Use 'x' for living cells and '.' for dead cells. Each line will
-            become a row in the grid.">{{ default_grid | trim }}</textarea>
-        <div>
-          <button type="submit" id="grid-submit">Start / Restart</button>
-        </div>
-      </form>
-      <form id="command-form">
-        <div>
-          <select id="command-field">
-            <option value="toggle-playback">Play/Pause</option>
-            <option value="step">Next Frame</option>
-            <option value="scroll (0, -5)">Scroll Up by 5</option>
-            <option value="scroll (0, 5)">Scroll Down by 5</option>
-            <option value="scroll (-5, 0)">Scroll Left by 5</option>
-            <option value="scroll (5, 0)">Scroll Right by 5</option>
-          </select>
-          <button type="submit" id="command-submit">Submit</button>
-        </div>
-      </form>
-    </section>
+  <!-- font
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <section id="game">
-      <div id="status-box">
-        <span id="status-label">Status:</span> <span id="status-output">Connecting...</span>
-      </div>
-      <pre id="grid-output"></pre>
-    </section>
+  <!-- css
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link rel="stylesheet" href="static/css/normalize.css">
+	<link rel="stylesheet" href="static/css/skeleton.css">
+	<link rel="stylesheet" href="static/style.css">
 
-    <script src="static/index.js"></script>
-  </body>
+  <!-- favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link rel="icon" type="image/png" href="static/images/favicon.png">
+
+</head>
+<body>
+
+  <!-- main page layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<div class="container">
+
+		<header class="row"><h1>Conway's Game of Life</h1></header>
+
+		<div class="row" id="control-panel">
+			<form id="grid-form">
+				<textarea id="grid-field" rows="20" cols="20" wrap="off"
+						autocomplete="off" spellcheck="false" autocapitalize="none"
+						placeholder="Enter your starting grid here.	Use 'x' for living cells
+						and '.' for dead cells. Each line will become a row in the grid."
+					>{{ default_grid | trim }}</textarea>
+				<div>
+					<button type="submit" id="grid-submit">Start / Restart</button>
+				</div>
+			</form>
+			<form id="command-form">
+				<div>
+					<select id="command-field">
+						<option value="toggle-playback">Play/Pause</option>
+						<option value="step">Next Frame</option>
+						<option value="scroll (0, -5)">Scroll Up by 5</option>
+						<option value="scroll (0, 5)">Scroll Down by 5</option>
+						<option value="scroll (-5, 0)">Scroll Left by 5</option>
+						<option value="scroll (5, 0)">Scroll Right by 5</option>
+					</select>
+					<button type="submit" id="command-submit">Submit</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="row" id="game">
+			<div class="three columns" id="status-box">
+				<div id="status-label">status</div>
+				<div id="status-output">Connecting...</div>
+				<div class="row">
+					<button class="offset-by-one-third column arrow fa fa-chevron-circle-up" type="button" value="scroll (2, 0)"></button>
+				</div>
+				<div class="row">
+					<button class="one column arrow fa fa-chevron-circle-left" type="button" value="scroll (-2, 0)"></button>
+					<button class="offset-by-two-thirds column arrow fa fa-chevron-circle-right" type="button" value="scroll (0, 2)"></button>
+				</div>
+				<div class="row">
+					<button class="offset-by-one-third column arrow fa fa-chevron-circle-down" type="button" value="scroll (0, -2)"></button>
+				</div>
+			</div>
+			<div class="nine columns">
+				<pre id="grid-output"></pre>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- scripts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<script src="static/index.js"></script>
+
+	<!-- end document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
 </html>
