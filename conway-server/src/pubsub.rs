@@ -10,13 +10,6 @@ use conway::{Game, Point, Settings, View};
 const CHAR_ALIVE: char = '■';
 const CHAR_DEAD: char = '□';
 
-// Commands.
-const CMD_PING: &str = "ping";
-const CMD_STEP: &str = "step";
-const CMD_TOGGLE_PLAYBACK: &str = "toggle-playback";
-const CMD_SCROLL: &str = "scroll";
-const CMD_RESTART: &str = "restart";
-
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
 }
@@ -81,26 +74,26 @@ impl ws::Handler for Server {
 
         let mut args = msg.as_text()?.trim().splitn(2, ' ');
         match args.next() {
-            Some(cmd) if cmd == CMD_PING => {
+            Some("ping") => {
                 if self.paused {
                     return Ok(());
                 }
                 self.next_turn(&mut game)
             }
-            Some(cmd) if cmd == CMD_STEP => {
+            Some("step") => {
                 if !self.paused {
                     return Ok(());
                 }
                 self.next_turn(&mut game)
             }
-            Some(cmd) if cmd == CMD_TOGGLE_PLAYBACK => {
+            Some("toggle-playback") => {
                 self.paused = !self.paused;
                 if !self.paused {
                     return self.next_turn(&mut game);
                 }
                 Ok(())
             }
-            Some(cmd) if cmd == CMD_SCROLL => {
+            Some("scroll") => {
                 let Point(dx, dy): Point = match args.next().unwrap_or_default().parse::<Point>() {
                     Ok(delta) => delta,
                     Err(err) => return self.alert(format!("WARNING: {}", err)),
@@ -108,7 +101,7 @@ impl ws::Handler for Server {
                 game.scroll(dx, dy);
                 self.out.send(game.draw())
             }
-            Some(cmd) if cmd == CMD_RESTART => {
+            Some("restart") => {
                 let pattern = args.next().unwrap_or_default();
                 *game = Server::new_game(pattern.to_owned());
                 Ok(())
