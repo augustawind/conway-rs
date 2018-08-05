@@ -1,11 +1,11 @@
-#starting-grid {
+#grid-field {
     resize: both;
     line-height: 0.75;
     font-size: large;
     font-family: Courier, "Courier New", monospace;
 }
 
-#game-output {
+#grid-output {
     font-size: xx-large;
     line-height: 0.5;
 }

@@ -1,20 +1,21 @@
 window.onload = function() {
     var commandForm = document.getElementById('command-form');
-    var commandField = document.getElementById('command');
-    var gridInput = document.getElementById('starting-grid');
-    var restartButton = document.getElementById('submit-pattern');
-    var outputField = document.getElementById('game-output');
-    var socketStatus = document.getElementById('status');
+    var commandField = document.getElementById('command-field');
+    var gridForm = document.getElementById('grid-form');
+    var gridField = document.getElementById('grid-field');
+
+    var gridOutput = document.getElementById('grid-output');
+    var statusOutput = document.getElementById('status-output');
 
     var socket = new WebSocket('ws://localhost:3012');
     socket.onopen = function(event) {
-        socketStatus.innerHTML = 'Connected to: ' + event.currentTarget.url;
-        socketStatus.className = 'open';
+        statusOutput.innerHTML = 'Connected to: ' + event.currentTarget.url;
+        statusOutput.className = 'open';
         socket.send('ping');
     };
     socket.onclose = function() {
-        socketStatus.innerHTML = 'Disconnected from WebSocket.';
-        socketStatus.className = 'closed';
+        statusOutput.innerHTML = 'Disconnected from WebSocket.';
+        statusOutput.className = 'closed';
     };
     socket.onerror = function(error) {
         console.log('WebSocket Error: ' + error);
@@ -22,16 +23,17 @@ window.onload = function() {
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data);
         if (data.status !== null)
-            socketStatus.innerHTML = data.status;
+            statusOutput.innerHTML = data.status;
         if (data.pattern !== null)
-            outputField.innerHTML = data.pattern;
+            gridOutput.innerHTML = data.pattern;
         setTimeout(function() {
             socket.send('ping');
         }, 500);
     };
 
-    restartButton.onclick = function() {
-        var cmd = restartButton.value + ' ' + gridInput.value;
+    gridForm.onsubmit = function(e) {
+        e.preventDefault();
+        var cmd = 'restart ' + gridField.value;
         socket.send(cmd);
         return false;
     };
