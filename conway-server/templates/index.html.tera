@@ -47,19 +47,6 @@
 					<button type="submit" id="grid-submit">Start / Restart</button>
 				</div>
 			</form>
-			<form id="command-form">
-				<div>
-					<select id="command-field">
-						<option value="toggle-playback">Play/Pause</option>
-						<option value="step">Next Frame</option>
-						<option value="scroll (0, -5)">Scroll Up by 5</option>
-						<option value="scroll (0, 5)">Scroll Down by 5</option>
-						<option value="scroll (-5, 0)">Scroll Left by 5</option>
-						<option value="scroll (5, 0)">Scroll Right by 5</option>
-					</select>
-					<button type="submit" id="command-submit">Submit</button>
-				</div>
-			</form>
 		</div>
 
 		<div class="row" id="status-box">
@@ -81,8 +68,8 @@
 						type="button" value="pause"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-pause" class="fa fa-pause"
-						type="button" value="pause"></button>
+				<button id="btn-step" class="fa fa-step-forward"
+						type="button" value="step"></button>
 			</div>
 			<div class="one column">
 				<button id="btn-scroll-up" class="fa fa-chevron-circle-up"

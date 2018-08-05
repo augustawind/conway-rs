@@ -1,8 +1,10 @@
 window.onload = function() {
-    var commandForm = document.getElementById('command-form');
-    var commandField = document.getElementById('command-field');
     var gridForm = document.getElementById('grid-form');
     var gridField = document.getElementById('grid-field');
+
+    var btnPlay = document.getElementById('btn-play');
+    var btnPause = document.getElementById('btn-pause');
+    var btnStep = document.getElementById('btn-step');
 
     var btnScrollLeft = document.getElementById('btn-scroll-left');
     var btnScrollRight = document.getElementById('btn-scroll-right');
@@ -43,11 +45,14 @@ window.onload = function() {
         return false;
     };
 
-    commandForm.onsubmit = function(e) {
-        e.preventDefault();
-        var cmd = commandField.value;
-        socket.send(cmd);
-        return false;
+    btnPlay.onclick = function() {
+        socket.send(btnPlay.value);
+    };
+    btnPause.onclick = function() {
+        socket.send(btnPause.value);
+    };
+    btnStep.onclick = function() {
+        socket.send(btnStep.value);
     };
 
     btnScrollLeft.onclick = function() {
