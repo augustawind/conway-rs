@@ -47,7 +47,29 @@
 							autocomplete="off" spellcheck="false"
 							autocapitalize="none">{{ default_grid | trim }}</textarea>
 				</div>
+
 				<div class="three columns">
+					<label>
+						<span>viewport</span>
+						<div class="help-tip">
+							<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+							Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+							screen.</p>
+						</div>
+						<select id="viewport">
+							<option value="fixed" selected>Fixed</option>
+							<option value="centered">Centered</option>
+						</select>
+					</label>
+
+					<label>
+						<span>tick delay</span>
+						<div class="help-tip">
+							<p>Milliseconds to wait between each tick, when autoplay is on.</p>
+						</div>
+						<input id="tick-delay" type="text" value="500" maxlength=4 />
+					</label>
+
 					<button type="submit" id="grid-submit">Load Pattern</button>
 				</div>
 			</form>
