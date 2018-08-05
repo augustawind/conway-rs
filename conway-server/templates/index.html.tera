@@ -12,7 +12,7 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- font
+  <!-- fonts
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -36,14 +36,15 @@
 
 		<header class="row"><h1>Conway's Game of Life</h1></header>
 
-		<div class="row" id="control-panel">
+		<div class="row" id="designer-box">
 			<form id="grid-form">
-				<textarea id="grid-field" rows="20" cols="20" wrap="off"
-						autocomplete="off" spellcheck="false" autocapitalize="none"
-						placeholder="Enter your starting grid here.	Use 'x' for living cells
-						and '.' for dead cells. Each line will become a row in the grid."
-					>{{ default_grid | trim }}</textarea>
-				<div>
+				<div class="nine columns">
+					<textarea id="grid-field" rows="20" cols="20" wrap="off"
+							placeholder="Design your starting pattern here."
+							autocomplete="off" spellcheck="false"
+							autocapitalize="none">{{ default_grid | trim }}</textarea>
+				</div>
+				<div class="three columns">
 					<button type="submit" id="grid-submit">Start / Restart</button>
 				</div>
 			</form>
@@ -54,11 +55,10 @@
 			<div id="status-output">Connecting...</div>
 		</div>
 
-		<div class="row" id="game">
-			<pre id="grid-output"></pre>
+		<div class="row" id="grid-output">
 		</div>
 
-		<div class="row" id="controls">
+		<div class="row" id="control-panel">
 			<div class="one column">
 				<button id="btn-play" class="fa fa-play"
 						type="button" value="play"></button>

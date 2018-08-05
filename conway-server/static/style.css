@@ -1,3 +1,7 @@
+#designer-box > form {
+  margin-bottom: 0;
+}
+
 #status-box {
   margin-top: 1em;
   margin-bottom: 1em;
@@ -8,10 +12,12 @@
 }
 
 #status-output {
-  height: 2em;
+  min-height: 2em;
 }
 
 #grid-field {
+  width: 100%;
+  height: 100%;
   resize: both;
   line-height: 0.75;
   font-size: large;
@@ -19,19 +25,24 @@
 }
 
 #grid-output {
-  font-size: xx-large;
-  line-height: 0.5;
-  margin: 0;
-  padding: 1em 0 1em 1em;
-  border: 2px solid #333;
-  overflow: hidden;
   width: 100%;
   height: 10em;
   max-width: border-box;
   max-height: border-box;
+  border: 1px solid #666;
+  margin: 0;
+  padding: 0;
+  line-height: 1ex;
+  font-size: xx-large;
+  overflow: hidden;
 }
 
-#controls button {
+#control-panel {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#control-panel button {
   color: black;
   font-size: 2em;
   padding: 0;
