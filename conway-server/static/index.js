@@ -1,11 +1,10 @@
 window.onload = function() {
     var commandForm = document.getElementById('command-form');
     var commandField = document.getElementById('command');
-    var gridInput = document.getElementById("starting-grid");
+    var gridInput = document.getElementById('starting-grid');
     var restartButton = document.getElementById('submit-pattern');
     var outputField = document.getElementById('game-output');
     var socketStatus = document.getElementById('status');
-    // var closeBtn = document.getElementById('close');
 
     var socket = new WebSocket('ws://localhost:3012');
     socket.onopen = function(event) {
@@ -13,7 +12,7 @@ window.onload = function() {
         socketStatus.className = 'open';
         socket.send('ping');
     };
-    socket.onclose = function(event) {
+    socket.onclose = function() {
         socketStatus.innerHTML = 'Disconnected from WebSocket.';
         socketStatus.className = 'closed';
     };
@@ -21,15 +20,18 @@ window.onload = function() {
         console.log('WebSocket Error: ' + error);
     };
     socket.onmessage = function(event) {
-        console.log('Event received: ' + event);
-        outputField.innerHTML = event.data;
+        var data = JSON.parse(event.data);
+        if (data.status !== null)
+            socketStatus.innerHTML = data.status;
+        if (data.pattern !== null)
+            outputField.innerHTML = data.pattern;
         setTimeout(function() {
             socket.send('ping');
         }, 500);
     };
 
-    restartButton.onclick = function(e) {
-        var cmd = restartButton.value + " " + gridInput.value;
+    restartButton.onclick = function() {
+        var cmd = restartButton.value + ' ' + gridInput.value;
         socket.send(cmd);
         return false;
     };

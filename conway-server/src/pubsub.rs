@@ -2,6 +2,7 @@ use std::fmt;
 use std::io::{stderr, Write};
 use std::sync::{Arc, Mutex};
 
+use serde_json;
 use ws;
 
 use conway::{Game, Point, Settings, View};
@@ -12,6 +13,37 @@ const CHAR_DEAD: char = '□';
 
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
+}
+
+#[derive(Serialize)]
+pub struct Message {
+    status: Option<String>,
+    pattern: Option<String>,
+}
+
+impl Message {
+    fn new() -> Self {
+        Message {
+            status: None,
+            pattern: None,
+        }
+    }
+
+    fn status<T: ToString>(mut self, status: T) -> Self {
+        self.status = Some(status.to_string());
+        self
+    }
+
+    fn pattern<T: ToString>(mut self, pattern: T) -> Self {
+        self.pattern = Some(pattern.to_string());
+        self
+    }
+}
+
+impl From<Message> for ws::Message {
+    fn from(msg: Message) -> Self {
+        ws::Message::Text(serde_json::to_string(&msg).unwrap())
+    }
 }
 
 pub struct Server {
@@ -50,15 +82,16 @@ impl Server {
 
     fn alert<T: fmt::Display + Into<ws::Message>>(&self, msg: T) -> ws::Result<()> {
         write!(stderr(), "{}", msg)?;
-        self.out.send(msg)
+        self.out.send(Message::new().status(msg))
     }
 
     fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
         if game.is_over() {
-            self.out.send("Grid is empty. Start a new game.")
+            self.out
+                .send(Message::new().status("Grid is stable. Start a new game!"))
         } else {
             game.tick();
-            self.out.send(game.draw())
+            self.out.send(Message::new().pattern(game.draw()))
         }
     }
 }
@@ -99,7 +132,7 @@ impl ws::Handler for Server {
                     Err(err) => return self.alert(format!("WARNING: {}", err)),
                 };
                 game.scroll(dx, dy);
-                self.out.send(game.draw())
+                self.out.send(Message::new().pattern(game.draw()))
             }
             Some("restart") => {
                 let pattern = args.next().unwrap_or_default();
