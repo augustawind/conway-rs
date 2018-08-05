@@ -13,16 +13,36 @@ header {
 }
 
 #status-box {
-  text-align: right;
-  padding-top: 1em;
+  border: 1px solid #bbb;
 }
 
 #status-label {
+  text-align: right;
+  padding: 0.3em 1em;
   font-variant: small-caps;
+  border-bottom: 1px solid #bbb
 }
 
 #status-output {
-  min-height: 2em;
+  resize: vertical;
+  padding: 0 0.5em;
+  margin: 0;
+  height: 4em;
+  overflow: scroll;
+}
+
+#status-output {
+  list-style: none;
+  white-space: pre;
+}
+
+#status-output > li:before {
+  content: '>>  ';
+  font-weight: bold;
+}
+
+.odd {
+  background-color: #F7F7F7;
 }
 
 #grid-field {
@@ -34,14 +54,22 @@ header {
   font-family: Courier, "Courier New", monospace;
 }
 
-#grid-output {
+#grid-container {
   width: 100%;
   height: 80%;
-  border: 1px solid #666;
   margin: 0.2em 0 0.5em 0;
-  padding: 0;
+  border: 1px solid #bbb;
+  padding: 2%;
+  box-sizing: border-box;
+  resize: both;
+}
+
+#grid-output {
+  width: 100%;
+  height: 100%;
   line-height: 1ex;
   font-size: xx-large;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
