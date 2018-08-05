@@ -81,7 +81,7 @@ impl Server {
         if game.is_over() {
             self.out.send(
                 Message::new()
-                    .status("Pattern has stabilized.")
+                    .status("Game is stable.")
                     .pattern(game.draw()),
             )
         } else {
@@ -145,7 +145,7 @@ impl ws::Handler for Server {
                 self.initial_game = game.clone();
                 self.out.send(
                     Message::new()
-                        .status("New pattern loaded.")
+                        .status("New game started with pattern.")
                         .pattern(game.draw()),
                 )
             }
@@ -153,7 +153,7 @@ impl ws::Handler for Server {
                 *game = self.initial_game.clone();
                 self.out.send(
                     Message::new()
-                        .status("Reset to most recent pattern loaded.")
+                        .status("Game restarted.")
                         .pattern(game.draw()),
                 )
             }
