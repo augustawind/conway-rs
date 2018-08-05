@@ -1,0 +1,15 @@
+indent: auto
+indent-spaces: 2
+wrap: 100 
+markup: yes
+
+vertical-space: yes
+break-before-br: yes
+
+show-warnings: yes
+show-meta-change: yes
+add-meta-charset: yes
+
+drop-empty-elements: no
+drop-empty-paras: no
+new-empty-tags: <button>
