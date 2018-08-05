@@ -77,7 +77,7 @@ impl<'a> Iterator for GameIter<'a> {
 }
 
 /// Game holds the high-level gameplay logic.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Game {
     grid: Grid,
     swap: Grid,

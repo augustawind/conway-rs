@@ -46,21 +46,14 @@ impl From<Message> for ws::Message {
 pub struct Server {
     out: ws::Sender,
     game: Arc<Mutex<Game>>,
+    initial_game: Game,
     paused: bool,
 }
 
 impl Server {
     pub fn new(out: ws::Sender) -> Self {
-        Server {
-            out,
-            game: Arc::new(Mutex::new(Server::new_game(String::new()))),
-            paused: false,
-        }
-    }
-
-    fn new_game(pattern: String) -> Game {
-        Game::new(
-            pattern.parse().unwrap(),
+        let game = Game::new(
+            String::new().parse().unwrap(),
             Settings {
                 delay: Duration::from_millis(100),
                 view: View::Fixed,
@@ -70,12 +63,13 @@ impl Server {
                 char_dead: '.',
                 ..Default::default()
             },
-        )
-    }
-
-    fn set_game(&mut self, game: Game) {
-        let mutex = Arc::get_mut(&mut self.game).unwrap();
-        *mutex.get_mut().unwrap() = game;
+        );
+        Server {
+            out,
+            game: Arc::new(Mutex::new(game.clone())),
+            initial_game: game,
+            paused: false,
+        }
     }
 
     fn alert<T: fmt::Display + Into<ws::Message>>(&self, msg: T) -> ws::Result<()> {
@@ -87,7 +81,7 @@ impl Server {
         if game.is_over() {
             self.out.send(
                 Message::new()
-                    .status("Pattern has stabilized. Start a new game.")
+                    .status("Pattern has stabilized.")
                     .pattern(game.draw()),
             )
         } else {
@@ -103,7 +97,6 @@ impl Server {
 
 impl ws::Handler for Server {
     fn on_open(&mut self, _: ws::Handshake) -> ws::Result<()> {
-        self.set_game(Server::new_game(String::new()));
         Ok(())
     }
 
@@ -149,7 +142,20 @@ impl ws::Handler for Server {
             Some("new-grid") => {
                 let pattern = args.next().unwrap_or_default();
                 game.reset_grid(pattern.parse().unwrap());
-                self.out.send(Message::new().pattern(game.draw()))
+                self.initial_game = game.clone();
+                self.out.send(
+                    Message::new()
+                        .status("New pattern loaded.")
+                        .pattern(game.draw()),
+                )
+            }
+            Some("restart") => {
+                *game = self.initial_game.clone();
+                self.out.send(
+                    Message::new()
+                        .status("Reset to most recent pattern loaded.")
+                        .pattern(game.draw()),
+                )
             }
             Some(arg) => self.alert(format!(
                 "WARNING: message contained unexpected command '{}'",
