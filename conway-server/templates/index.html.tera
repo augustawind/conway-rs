@@ -39,41 +39,51 @@
 
 		<header><h1>Conway's Game of Life</h1></header>
 
-		<div class="row" id="designer-box">
-			<form id="grid-form">
-				<div class="nine columns">
-					<textarea id="grid-field" rows="20" cols="20" wrap="off"
-							placeholder="Design your starting pattern here."
-							autocomplete="off" spellcheck="false"
-							autocapitalize="none">{{ default_grid | trim }}</textarea>
-				</div>
+		<form id="grid-form">
+			<div class="row" id="designer-box">
+					<div class="nine columns">
+						<label>
+							<span>pattern</span>
+							<div class="help-tip">
+								<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+								Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+								screen.</p>
+							</div>
+						</label>
+						<textarea id="grid-field" rows="20" cols="20" wrap="off"
+								placeholder="Design your starting pattern here."
+								autocomplete="off" spellcheck="false"
+								autocapitalize="none">{{ default_grid | trim }}</textarea>
+					</div>
 
-				<div class="three columns">
-					<label>
-						<span>viewport</span>
-						<div class="help-tip">
-							<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
-							Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
-							screen.</p>
-						</div>
+					<div class="three columns">
+						<label>
+							<span>viewport</span>
+							<div class="help-tip">
+								<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+								Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+								screen.</p>
+							</div>
+						</label>
 						<select id="viewport">
 							<option value="fixed" selected>Fixed</option>
 							<option value="centered">Centered</option>
 						</select>
-					</label>
 
-					<label>
-						<span>tick delay</span>
-						<div class="help-tip">
-							<p>Milliseconds to wait between each tick, when autoplay is on.</p>
-						</div>
+						<label>
+							<span>tick delay</span>
+							<div class="help-tip">
+								<p>Milliseconds to wait between each tick, when autoplay is on.</p>
+							</div>
+						</label>
 						<input id="tick-delay" type="text" value="500" maxlength=4 />
-					</label>
+					</div>
+			</div>
 
-					<button type="submit" id="grid-submit">Load Pattern</button>
-				</div>
-			</form>
-		</div>
+			<div class="row" id="grid-submit-container">
+				<button type="submit" id="grid-submit">Load Pattern</button>
+			</div>
+		</form>
 
 		<div id="game-area">
 			<div class="row" id="message-box">

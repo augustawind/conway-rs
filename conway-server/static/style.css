@@ -3,8 +3,18 @@ header {
   margin: 1em 0 3em 0;
 }
 
-#designer-box > form {
+#designer-box {
   margin-bottom: 0;
+  text-align: right;
+}
+
+#grid-field {
+  width: 100%;
+  height: 10em;
+  resize: both;
+  line-height: 0.75;
+  font-size: large;
+  font-family: Courier, "Courier New", monospace;
 }
 
 #game-area {
@@ -45,15 +55,6 @@ header {
   background-color: #F7F7F7;
 }
 
-#grid-field {
-  width: 100%;
-  height: 10em;
-  resize: both;
-  line-height: 0.75;
-  font-size: large;
-  font-family: Courier, "Courier New", monospace;
-}
-
 #grid-container {
   width: 100%;
   height: 80%;
@@ -78,21 +79,32 @@ header {
   text-align: center;
 }
 
-label > span:first-child {
+#grid-form label > span:first-child {
   margin-right: 5px;
   vertical-align: top;
   font-size: 18px;
   font-variant: small-caps;
 }
 
+#grid-form select,
+#grid-form input {
+  width: max-content;
+}
+
 label {
+  display: block;
   width: 100%;
 }
 
 /*
- * help tooltip
+ * Help Tooltip
+ *
+ * To add a tooltip, create a paragraph inside a div with the .help-tip class:
+ *
+ *   <div class="help-tip"><p>{{ HELP_TEXT }}</p></div>
  */
 
+/* The tooltip container. */
 .help-tip {
   display: inline-block;
   text-align: center;
@@ -106,12 +118,14 @@ label {
 }
 
 
+/* The tooltip icon (?). */
 .help-tip:before {
   content: '?';
   font-weight:  bold;
   color: #fff;
 }
 
+/* Display the tooltip on hover. */
 .help-tip:hover p {
   display: block;
   transform-origin: 100% 0%;
@@ -121,7 +135,8 @@ label {
 
 }
 
-.help-tip p {  /* The tooltip */
+/* The tooltip box itself. */
+.help-tip p {
   display: none;
   text-align: left;
   background-color: #1E2021;
@@ -136,11 +151,29 @@ label {
   line-height: 1.4;
 }
 
-.help-tip p:after { /* Prevents the tooltip from being hidden */
+/* Prevent the tooltip from being hidden */
+.help-tip p:after {
   width: 100%;
   height: 40px;
   content: '';
   position: absolute;
   top: -40px;
   left: 0;
+}
+
+@-webkit-keyframes fadeIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.6);
+  }
+
+  100% {
+    opacity: 100%;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity:100%; }
 }
