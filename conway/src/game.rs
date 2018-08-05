@@ -288,6 +288,53 @@ mod test {
         use super::*;
 
         #[test]
+        fn test_viewport_fixed_1() {
+            assert_eq!(
+                Game::new(
+                    Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)]),
+                    Settings {
+                        width: Some(7),
+                        height: Some(7),
+                        ..Default::default()
+                    }
+                ).viewport_fixed(),
+                (Point(-3, 0), Point(3, 6)),
+                "should pad content to fit width/height"
+            );
+        }
+
+        #[test]
+        fn test_viewport_fixed_2() {
+            assert_eq!(
+                Game::new(
+                    Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)]),
+                    Settings {
+                        width: Some(88),
+                        height: Some(12),
+                        ..Default::default()
+                    }
+                ).viewport_fixed(),
+                (Point(-12, 1), Point(75, 12))
+            );
+        }
+
+        #[test]
+        fn test_viewport_fixed_3() {
+            assert_eq!(
+                Game::new(
+                    // natural size = 4 x 3
+                    Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
+                    Settings {
+                        width: Some(10),
+                        height: Some(3),
+                        ..Default::default()
+                    }
+                ).viewport_fixed(),
+                (Point(2, 2), Point(11, 4)),
+            );
+        }
+
+        #[test]
         fn test_viewport_centered_1() {
             assert_eq!(
                 Game::new(
