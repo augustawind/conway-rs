@@ -12,35 +12,35 @@ header {
   height: 97vh;
 }
 
-#status-box {
+#message-box {
   border: 1px solid #bbb;
 }
 
-#status-label {
+#messages-label {
   text-align: right;
   padding: 0.3em 1em;
   font-variant: small-caps;
   border-bottom: 1px solid #bbb
 }
 
-#status-output {
-  resize: vertical;
-  padding: 0 0.5em;
-  margin: 0;
+#messages {
   height: 4em;
+  margin: 0;
+  padding: 0;
+  resize: vertical;
   overflow: scroll;
-}
-
-#status-output {
-  list-style: none;
   white-space: pre;
+  list-style: none;
 }
 
-#status-output > li:before {
+.message {
+  margin: 0;
+  padding: 0 0.5em;
+}
+.message:before {
   content: '>>  ';
   font-weight: bold;
 }
-
 .odd {
   background-color: #F7F7F7;
 }
@@ -61,7 +61,6 @@ header {
   border: 1px solid #bbb;
   padding: 2%;
   box-sizing: border-box;
-  resize: both;
 }
 
 #grid-output {
@@ -74,10 +73,12 @@ header {
 }
 
 #control-panel {
-  padding-bottom: 1em;
   text-align: center;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.command-btn {
-  font-size: 1.3em;
+.command-btn button {
+  font-size: 1em;
 }
+

@@ -5,8 +5,8 @@ var CHAR_DEAD = '□';
 window.onload = function() {
     var isOddMsg = false;
     var addMessage = function(msg) {
-        statusOutput.innerHTML +=
-            (isOddMsg ? '<li class="odd">' : '<li>') + msg + '</li>';
+        messages.innerHTML +=
+            (isOddMsg ? '<li class="message odd">' : '<li class="message">') + msg + '</li>';
         isOddMsg = !isOddMsg;
     };
 
@@ -16,11 +16,12 @@ window.onload = function() {
     var gridField = document.getElementById('grid-field');
 
     var gridOutput = document.getElementById('grid-output');
-    var statusOutput = document.getElementById('status-output');
+    var messages = document.getElementById('messages');
 
     var socket = new WebSocket('ws://localhost:3012');
     socket.onopen = function() {
         addMessage('Connected to game server.');
+        socket.send('ping');
     };
     socket.onclose = function() {
         addMessage('Disconnected from game server.');

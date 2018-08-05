@@ -54,9 +54,9 @@
 		</div>
 
 		<div id="game-area">
-			<div class="row" id="status-box">
-				<div id="status-label">messages</div>
-				<ul id="status-output"></ul>
+			<div class="row" id="message-box">
+				<div id="messages-label">messages</div>
+				<ul id="messages"></ul>
 			</div>
 
 			<div class="row" id="grid-container">
@@ -64,38 +64,40 @@
 			</div>
 
 			<div class="row" id="control-panel">
-				<div class="offset-by-one one column">
-					<button class="command-btn fa fa-play"
+				<div class="command-btn one column">
+					<button class="fa fa-play"
 							type="button" value="play" title="Play"></button>
 				</div>
-				<div class="one column">
-					<button class="command-btn fa fa-pause"
+				<div class="command-btn one column">
+					<button class="fa fa-pause"
 							type="button" value="pause" title="Pause"></button>
 				</div>
-				<div class="one column">
-					<button class="command-btn fa fa-step-forward"
+				<div class="command-btn one column">
+					<button class="fa fa-step-forward"
 							type="button" value="step" title="Step"></button>
 				</div>
 
-				<div class="offset-by-one one column">
-					<button class="command-btn fa fa-angle-up"
+				<div class="one column"></div>
+				<div class="command-btn offset-by-one one column">
+					<button class="fa fa-angle-double-up"
 							type="button" value="scroll (0, 5)" title="Scroll Up"></button>
 				</div>
-				<div class="one column">
-					<button class="command-btn fa fa-angle-down"
+				<div class="command-btn one column">
+					<button class="fa fa-angle-double-down"
 						 type="button" value="scroll (0, -5)" title="Scroll Down"></button>
 				</div>
-				<div class="one column">
-					<button class="command-btn fa fa-angle-left"
+				<div class="command-btn one column">
+					<button class="fa fa-angle-double-left"
 							type="button" value="scroll (5, 0)" title="Scroll Left"></button>
 				</div>
-				<div class="one column">
-					<button class="command-btn fa fa-angle-right"
+				<div class="command-btn one column">
+					<button class="fa fa-angle-double-right"
 							type="button" value="scroll (-5, 0)" title="Scroll Right"></button>
 				</div>
 
-				<div class="offset-by-one one column">
-					<button class="command-btn fa fa-redo"
+				<div class="one column"></div>
+				<div class="command-btn offset-by-one one column">
+					<button class="fa fa-redo"
 							type="button" value="restart" title="Restart Game"></button>
 				</div>
 			</div>
