@@ -15,7 +15,10 @@
   <!-- fonts
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+			integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+
 
   <!-- css
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -45,7 +48,7 @@
 							autocapitalize="none">{{ default_grid | trim }}</textarea>
 				</div>
 				<div class="three columns">
-					<button type="submit" id="grid-submit">Start / Restart</button>
+					<button type="submit" id="grid-submit">Load Pattern</button>
 				</div>
 			</form>
 		</div>
@@ -60,7 +63,7 @@
 			</div>
 
 			<div class="row" id="control-panel">
-				<div class="one column">
+				<div class="offset-by-one one column">
 					<button class="command-btn fa fa-play"
 							type="button" value="play"></button>
 				</div>
@@ -88,6 +91,11 @@
 				<div class="one column">
 					<button class="command-btn fa fa-angle-right"
 							type="button" value="scroll (-5, 0)"></button>
+				</div>
+
+				<div class="offset-by-one one column">
+					<button class="command-btn fa fa-redo"
+							type="button" value="restart"></button>
 				</div>
 			</div>
 		</div>

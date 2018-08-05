@@ -47,15 +47,9 @@ header {
 
 #control-panel {
   padding-bottom: 1em;
+  text-align: center;
 }
 
-#control-panel button {
-  color: black;
-  font-size: 2em;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  width: fit-content;
-  height: fit-content;
-  text-align: center;
+.command-btn {
+  font-size: 1.3em;
 }
