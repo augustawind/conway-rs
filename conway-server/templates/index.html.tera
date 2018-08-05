@@ -2,18 +2,25 @@
 <html>
   <head>
     <title>{{ title }}</title>
+
+    <link rel="stylesheet" href="static/css/normalize.css">
+    <link rel="stylesheet" href="static/css/skeleton.css">
     <link rel="stylesheet" href="static/style.css">
+
+    <link rel="icon" type="image/png" href="static/images/favicon.png">
   </head>
   <body>
     <header><h1>Conway's Game of Life</h1></header>
 
     <section id="controls">
       <form id="grid-form">
-        <textarea id="grid-field" rows="10" cols="10" id="pattern" wrap="off"
+        <textarea id="grid-field" rows="20" cols="20" wrap="off"
             autocomplete="off" spellcheck="false" autocapitalize="none" placeholder="Enter your
             starting grid here.  Use 'x' for living cells and '.' for dead cells. Each line will
             become a row in the grid.">{{ default_grid | trim }}</textarea>
-        <button type="submit" id="grid-submit">Start / Restart</button>
+        <div>
+          <button type="submit" id="grid-submit">Start / Restart</button>
+        </div>
       </form>
       <form id="command-form">
         <div>
