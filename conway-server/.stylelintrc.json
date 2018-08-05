@@ -1,0 +1,5 @@
+{
+  "extends": "/Users/dtr/.nvm/versions/node/v6.10.3/lib/node_modules/stylelint-config-standard/index.js",
+  "rules": {
+  }
+}

@@ -47,12 +47,14 @@ header {
   margin: 0;
   padding: 0 0.5em;
 }
-.message:before {
+
+.message::before {
   content: '>>  ';
   font-weight: bold;
 }
+
 .odd {
-  background-color: #F7F7F7;
+  background-color: #f7f7f7;
 }
 
 #grid-container {
@@ -108,7 +110,7 @@ label {
 .help-tip {
   display: inline-block;
   text-align: center;
-  background-color: #BCDBEA;
+  background-color: #bcdbea;
   border-radius: 50%;
   width: 16px;
   height: 16px;
@@ -117,42 +119,39 @@ label {
   cursor: default;
 }
 
-
 /* The tooltip icon (?). */
-.help-tip:before {
+.help-tip::before {
   content: '?';
-  font-weight:  bold;
+  font-weight: bold;
   color: #fff;
-}
-
-/* Display the tooltip on hover. */
-.help-tip:hover p {
-  display: block;
-  transform-origin: 100% 0%;
-
-  -webkit-animation: fadeIn 0.3s ease-in-out;
-  animation: fadeIn 0.3s ease-in-out;
-
 }
 
 /* The tooltip box itself. */
 .help-tip p {
   display: none;
   text-align: left;
-  background-color: #1E2021;
+  background-color: #1e2021;
   padding: 20px;
   width: 300px;
   position: absolute;
   border-radius: 3px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   right: -4px;
-  color: #FFF;
+  color: #fff;
   font-size: 13px;
   line-height: 1.4;
 }
 
+/* Display the tooltip on hover. */
+.help-tip:hover p {
+  display: block;
+  transform-origin: 100% 0%;
+  -webkit-animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 /* Prevent the tooltip from being hidden */
-.help-tip p:after {
+.help-tip p::after {
   width: 100%;
   height: 40px;
   content: '';
@@ -175,5 +174,5 @@ label {
 
 @keyframes fadeIn {
   0% { opacity: 0; }
-  100% { opacity:100%; }
+  100% { opacity: 100%; }
 }
