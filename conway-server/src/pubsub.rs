@@ -1,6 +1,7 @@
 use std::fmt;
 use std::io::{stderr, Write};
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 use serde_json;
 use ws;
@@ -61,6 +62,7 @@ impl Server {
         Game::new(
             pattern.parse().unwrap(),
             Settings {
+                delay: Duration::from_millis(100),
                 view: View::Fixed,
                 width: Some(50),
                 height: Some(50),
@@ -81,7 +83,7 @@ impl Server {
         self.out.send(Message::new().status(msg))
     }
 
-    fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
+    fn next_turn(&self, game: &mut Game, delay: bool) -> ws::Result<()> {
         if game.is_over() {
             self.out.send(
                 Message::new()
@@ -89,7 +91,11 @@ impl Server {
                     .pattern(game.draw()),
             )
         } else {
-            game.tick();
+            if delay {
+                game.tick_with_delay();
+            } else {
+                game.tick();
+            }
             self.out.send(Message::new().pattern(game.draw()))
         }
     }
@@ -110,11 +116,11 @@ impl ws::Handler for Server {
                 if self.paused {
                     return Ok(());
                 }
-                self.next_turn(&mut game)
+                self.next_turn(&mut game, true)
             }
             Some("step") => {
                 if self.paused {
-                    self.next_turn(&mut game)
+                    self.next_turn(&mut game, false)
                 } else {
                     self.paused = true;
                     Ok(())
@@ -124,7 +130,7 @@ impl ws::Handler for Server {
                 let was_paused = self.paused;
                 self.paused = false;
                 if was_paused {
-                    return self.next_turn(&mut game);
+                    return self.next_turn(&mut game, false);
                 }
                 Ok(())
             }
