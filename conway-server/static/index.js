@@ -1,3 +1,7 @@
+// Grid defaults.
+var CHAR_ALIVE = '■';
+var CHAR_DEAD = '□';
+
 window.onload = function() {
     var gridForm = document.getElementById('grid-form');
     var gridField = document.getElementById('grid-field');
@@ -29,10 +33,11 @@ window.onload = function() {
     };
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data);
-        if (data.status !== null)
-            statusOutput.innerHTML = data.status;
+        statusOutput.innerHTML = data.status;
         if (data.pattern !== null)
-            gridOutput.innerHTML = data.pattern;
+            gridOutput.innerHTML = data.pattern
+                .replace(/(\.)/g, CHAR_DEAD)
+                .replace(/(x)/g, CHAR_ALIVE);
         setTimeout(function() {
             socket.send('ping');
         }, 500);
@@ -40,7 +45,7 @@ window.onload = function() {
 
     gridForm.onsubmit = function(e) {
         e.preventDefault();
-        var cmd = 'restart ' + gridField.value;
+        var cmd = 'new-grid ' + gridField.value;
         socket.send(cmd);
         return false;
     };

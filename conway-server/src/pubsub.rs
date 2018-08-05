@@ -7,10 +7,6 @@ use ws;
 
 use conway::{Game, Point, Settings, View};
 
-// Grid defaults.
-const CHAR_ALIVE: char = '■';
-const CHAR_DEAD: char = '□';
-
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
 }
@@ -65,11 +61,11 @@ impl Server {
         Game::new(
             pattern.parse().unwrap(),
             Settings {
-                char_alive: CHAR_ALIVE,
-                char_dead: CHAR_DEAD,
                 view: View::Fixed,
                 width: Some(50),
                 height: Some(50),
+                char_alive: 'x',
+                char_dead: '.',
                 ..Default::default()
             },
         )
@@ -87,8 +83,11 @@ impl Server {
 
     fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
         if game.is_over() {
-            self.out
-                .send(Message::new().status("Grid is stable. Start a new game!"))
+            self.out.send(
+                Message::new()
+                    .status("Pattern has stabilized. Start a new game.")
+                    .pattern(game.draw()),
+            )
         } else {
             game.tick();
             self.out.send(Message::new().pattern(game.draw()))
@@ -115,7 +114,7 @@ impl ws::Handler for Server {
             }
             Some("step") => {
                 if !self.paused {
-                    return Ok(());
+                    self.paused = true;
                 }
                 self.next_turn(&mut game)
             }
@@ -139,10 +138,10 @@ impl ws::Handler for Server {
                 game.scroll(dx, dy);
                 self.out.send(Message::new().pattern(game.draw()))
             }
-            Some("restart") => {
+            Some("new-grid") => {
                 let pattern = args.next().unwrap_or_default();
                 *game = Server::new_game(pattern.to_owned());
-                Ok(())
+                self.out.send(Message::new().pattern(game.draw()))
             }
             Some(arg) => self.alert(format!(
                 "WARNING: message contained unexpected command '{}'",
