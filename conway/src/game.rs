@@ -323,6 +323,17 @@ mod test {
             );
         }
 
+        // Test that `Game.viewport_fixed` adjusts for scroll.
+        #[test]
+        fn test_viewport_fixed_with_scroll() {
+            let mut game = mk_game(
+                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                (Some(10), Some(3)),
+            );
+            game.scroll(1, -5);
+            assert_eq!(game.viewport_fixed(), (Point(3, -3), Point(12, -1)));
+        }
+
         // Test `Game.viewport_centered`.
         #[test]
         fn test_viewport_centered_1() {
@@ -368,6 +379,17 @@ mod test {
             );
         }
 
+        // Test that `Game.viewport_centered` adjusts for scroll.
+        #[test]
+        fn test_viewport_centered_with_scroll() {
+            let mut game = mk_game(
+                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                (Some(10), Some(3)),
+            );
+            game.scroll(1, -5);
+            assert_eq!(game.viewport_centered(), (Point(0, -3), Point(9, -1)));
+        }
+
         // Test `Game.scroll`.
         #[test]
         fn test_scroll() {
@@ -390,7 +412,7 @@ mod test {
 
         // `Game.center_viewport` should account for current scroll.
         #[test]
-        fn test_center_viewport_scrolled() {
+        fn test_center_viewport_with_scroll() {
             let mut game = mk_game(
                 vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
                 (Some(10), Some(3)),
