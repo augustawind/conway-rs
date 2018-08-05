@@ -69,7 +69,7 @@ impl Server {
             out,
             game: Arc::new(Mutex::new(game.clone())),
             initial_game: game,
-            paused: false,
+            paused: true,
         }
     }
 
@@ -98,7 +98,8 @@ impl Server {
 
 impl ws::Handler for Server {
     fn on_open(&mut self, _: ws::Handshake) -> ws::Result<()> {
-        Ok(())
+        let game = self.game.lock().unwrap();
+        self.out.send(Message::new().pattern(game.draw()))
     }
 
     fn on_message(&mut self, msg: ws::Message) -> ws::Result<()> {

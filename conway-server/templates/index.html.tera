@@ -55,11 +55,12 @@
 
 		<div id="game-area">
 			<div class="row" id="status-box">
-				<div id="status-label">status</div>
-				<div id="status-output">Connecting...</div>
+				<div id="status-label">messages</div>
+				<ul id="status-output"></ul>
 			</div>
 
-			<div class="row" id="grid-output">
+			<div class="row" id="grid-container">
+				<div id="grid-output"></div>
 			</div>
 
 			<div class="row" id="control-panel">

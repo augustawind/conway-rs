@@ -3,6 +3,13 @@ var CHAR_ALIVE = '■';
 var CHAR_DEAD = '□';
 
 window.onload = function() {
+    var isOddMsg = false;
+    var addMessage = function(msg) {
+        statusOutput.innerHTML +=
+            (isOddMsg ? '<li class="odd">' : '<li>') + msg + '</li>';
+        isOddMsg = !isOddMsg;
+    };
+
     var gameArea = document.getElementById('game-area');
 
     var gridForm = document.getElementById('grid-form');
@@ -12,21 +19,20 @@ window.onload = function() {
     var statusOutput = document.getElementById('status-output');
 
     var socket = new WebSocket('ws://localhost:3012');
-    socket.onopen = function(event) {
-        statusOutput.innerHTML = 'Connected to: ' + event.currentTarget.url;
-        statusOutput.className = 'open';
-        socket.send('ping');
+    socket.onopen = function() {
+        addMessage('Connected to game server.');
     };
     socket.onclose = function() {
-        statusOutput.innerHTML = 'Disconnected from WebSocket.';
-        statusOutput.className = 'closed';
+        addMessage('Disconnected from game server.');
     };
     socket.onerror = function(error) {
         console.log('WebSocket Error: ' + error);
     };
+
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data);
-        statusOutput.innerHTML = data.status;
+        if (data.status !== null)
+            addMessage(data.status);
         if (data.pattern !== null)
             gridOutput.innerHTML = data.pattern
                 .replace(/(\.)/g, CHAR_DEAD)
