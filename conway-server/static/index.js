@@ -3,6 +3,8 @@ var CHAR_ALIVE = '■';
 var CHAR_DEAD = '□';
 
 window.onload = function() {
+    var gameArea = document.getElementById('game-area');
+
     var gridForm = document.getElementById('grid-form');
     var gridField = document.getElementById('grid-field');
 
@@ -36,6 +38,11 @@ window.onload = function() {
 
     gridForm.onsubmit = function(e) {
         e.preventDefault();
+        gameArea.scrollIntoView({
+            block: 'start',
+            inline: 'nearest',
+            behavior: 'smooth'
+        });
         var cmd = 'new-grid ' + gridField.value;
         socket.send(cmd);
         return false;
