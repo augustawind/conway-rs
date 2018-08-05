@@ -75,19 +75,19 @@
 
 				<div class="offset-by-one one column">
 					<button class="command-btn fa fa-angle-up"
-							type="button" value="scroll (0, -1)"></button>
+							type="button" value="scroll (0, 5)"></button>
 				</div>
 				<div class="one column">
 					<button class="command-btn fa fa-angle-down"
-						 type="button" value="scroll (0, 1)"></button>
+						 type="button" value="scroll (0, -5)"></button>
 				</div>
 				<div class="one column">
 					<button class="command-btn fa fa-angle-left"
-							type="button" value="scroll (-1, 0)"></button>
+							type="button" value="scroll (5, 0)"></button>
 				</div>
 				<div class="one column">
 					<button class="command-btn fa fa-angle-right"
-							type="button" value="scroll (1, 0)"></button>
+							type="button" value="scroll (-5, 0)"></button>
 				</div>
 			</div>
 		</div>
