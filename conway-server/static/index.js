@@ -5,9 +5,18 @@ var CHAR_DEAD = '□';
 window.onload = function() {
     var isOddMsg = false;
     var addMessage = function(msg) {
-        messages.innerHTML +=
-            (isOddMsg ? '<li class="message odd">' : '<li class="message">') + msg + '</li>';
+        var isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
+
+        var elem = document.createElement('li');
+        elem.setAttribute('class', isOddMsg ? 'message odd' : 'message');
+        elem.textContent = msg;
+        messages.appendChild(elem);
+
         isOddMsg = !isOddMsg;
+
+        // If the message box was already scrolled down, auto-scroll down to reveal new message.
+        if (isScrolledDown)
+            messages.scrollTop = messages.scrollHeight - messages.clientHeight;
     };
 
     var gameArea = document.getElementById('game-area');
