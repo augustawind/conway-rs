@@ -34,7 +34,7 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 	<div class="container">
 
-		<header class="row"><h1>Conway's Game of Life</h1></header>
+		<header><h1>Conway's Game of Life</h1></header>
 
 		<div class="row" id="designer-box">
 			<form id="grid-form">
@@ -50,42 +50,45 @@
 			</form>
 		</div>
 
-		<div class="row" id="status-box">
-			<div id="status-label">status</div>
-			<div id="status-output">Connecting...</div>
-		</div>
+		<div id="game-area">
+			<div class="row" id="status-box">
+				<div id="status-label">status</div>
+				<div id="status-output">Connecting...</div>
+			</div>
 
-		<div class="row" id="grid-output">
-		</div>
+			<div class="row" id="grid-output">
+			</div>
 
-		<div class="row" id="control-panel">
-			<div class="one column">
-				<button class="command-btn fa fa-play"
-						type="button" value="play"></button>
-			</div>
-			<div class="one column">
-				<button class="command-btn fa fa-pause"
-						type="button" value="pause"></button>
-			</div>
-			<div class="one column">
-				<button class="command-btn fa fa-step-forward"
-						type="button" value="step"></button>
-			</div>
-			<div class="offset-by-one one column">
-				<button class="command-btn fa fa-angle-up"
-						type="button" value="scroll (0, -1)"></button>
-			</div>
-			<div class="one column">
-				<button class="command-btn fa fa-angle-down"
-					 type="button" value="scroll (0, 1)"></button>
-			</div>
-			<div class="one column">
-				<button class="command-btn fa fa-angle-left"
-						type="button" value="scroll (-1, 0)"></button>
-			</div>
-			<div class="one column">
-				<button class="command-btn fa fa-angle-right"
-						type="button" value="scroll (1, 0)"></button>
+			<div class="row" id="control-panel">
+				<div class="one column">
+					<button class="command-btn fa fa-play"
+							type="button" value="play"></button>
+				</div>
+				<div class="one column">
+					<button class="command-btn fa fa-pause"
+							type="button" value="pause"></button>
+				</div>
+				<div class="one column">
+					<button class="command-btn fa fa-step-forward"
+							type="button" value="step"></button>
+				</div>
+
+				<div class="offset-by-one one column">
+					<button class="command-btn fa fa-angle-up"
+							type="button" value="scroll (0, -1)"></button>
+				</div>
+				<div class="one column">
+					<button class="command-btn fa fa-angle-down"
+						 type="button" value="scroll (0, 1)"></button>
+				</div>
+				<div class="one column">
+					<button class="command-btn fa fa-angle-left"
+							type="button" value="scroll (-1, 0)"></button>
+				</div>
+				<div class="one column">
+					<button class="command-btn fa fa-angle-right"
+							type="button" value="scroll (1, 0)"></button>
+				</div>
 			</div>
 		</div>
 
