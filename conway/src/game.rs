@@ -156,6 +156,7 @@ impl Game {
         }
     }
 
+    // Return a Viewport starting at the lowest x and y values of live Cells present in the Game.
     pub fn viewport_fixed(&self) -> (Point, Point) {
         let Point(x0, y0) = self.viewport.origin + self.viewport.scroll;
         let p1 = Point(
@@ -165,6 +166,7 @@ impl Game {
         (Point(x0, y0), p1)
     }
 
+    // Return a Viewport centered around existing live Cells.
     pub fn viewport_centered(&self) -> (Point, Point) {
         let (Point(x0, y0), Point(x1, y1)) = self.grid.calculate_bounds();
         let (width, height) = (x1 - x0 + 1, y1 - y0 + 1);
@@ -216,6 +218,7 @@ impl Game {
     }
 }
 
+// Split an integer into 2 halves that always add up to the given number.
 fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
     let two = T::one() + T::one();
     let (quotient, remainder) = n.div_rem(&two);
@@ -253,6 +256,7 @@ mod test {
         assert_eq!(game.viewport.height, 6);
     }
 
+    // Test `Game.survive`.
     #[test]
     fn test_survives() {
         let game = mk_game(vec![Point(1, 0), Point(1, 1), Point(1, 2)], (None, None));
@@ -278,12 +282,15 @@ mod test {
         );
     }
 
+    // Tests for `Game.viewport` and related functionality.
     mod viewport {
         use super::*;
 
+        // Test `Game.scroll`.
         #[test]
         fn test_scroll() {}
 
+        // Test `Game.viewport_fixed`.
         #[test]
         fn test_viewport_fixed_1() {
             assert_eq!(
@@ -296,6 +303,7 @@ mod test {
             );
         }
 
+        // ...
         #[test]
         fn test_viewport_fixed_2() {
             assert_eq!(
@@ -307,6 +315,7 @@ mod test {
             );
         }
 
+        // ...
         #[test]
         fn test_viewport_fixed_3() {
             assert_eq!(
@@ -318,6 +327,7 @@ mod test {
             );
         }
 
+        // Test `Game.viewport_centered`.
         #[test]
         fn test_viewport_centered_1() {
             assert_eq!(
@@ -330,6 +340,7 @@ mod test {
             );
         }
 
+        // ...
         #[test]
         fn test_viewport_centered_2() {
             assert_eq!(
@@ -346,6 +357,7 @@ mod test {
             );
         }
 
+        // ...
         #[test]
         fn test_viewport_centered_3() {
             assert_eq!(
@@ -360,6 +372,7 @@ mod test {
             );
         }
 
+        // Test `Game.center_viewport`.
         #[test]
         fn test_center_viewport() {
             let mut game = mk_game(
@@ -371,6 +384,7 @@ mod test {
             assert_eq!(game.viewport_fixed(), expected);
         }
 
+        // `Game.center_viewport` should account for current scroll.
         #[test]
         fn test_center_viewport_scrolled() {
             let mut game = mk_game(
@@ -384,6 +398,7 @@ mod test {
         }
     }
 
+    // Test `split_int`.
     #[test]
     fn test_split_int() {
         assert_eq!(split_int(30), (15, 15));
