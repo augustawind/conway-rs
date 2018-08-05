@@ -6,7 +6,8 @@ use std::time::Duration;
 use serde_json;
 use ws;
 
-use conway::{Game, Point, Settings, View};
+use conway::config::Settings;
+use conway::{Game, Point, View};
 
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
