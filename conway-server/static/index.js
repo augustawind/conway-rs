@@ -64,9 +64,9 @@ window.onload = function() {
         return false;
     };
 
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('command-btn')) {
+    document.querySelectorAll('#control-panel button').forEach(function(button) {
+        button.onclick = function(event) {
             socket.send(event.target.value);
-        }
+        };
     });
 };
