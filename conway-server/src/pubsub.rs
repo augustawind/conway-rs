@@ -119,11 +119,16 @@ impl ws::Handler for Server {
                 }
                 self.next_turn(&mut game)
             }
-            Some("toggle-playback") => {
-                self.paused = !self.paused;
-                if !self.paused {
+            Some("play") => {
+                let was_paused = self.paused;
+                self.paused = false;
+                if was_paused {
                     return self.next_turn(&mut game);
                 }
+                Ok(())
+            }
+            Some("pause") => {
+                self.paused = true;
                 Ok(())
             }
             Some("scroll") => {

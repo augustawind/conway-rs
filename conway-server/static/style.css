@@ -19,7 +19,7 @@
   height: border-box;
 }
 
-.arrow {
+#controls button {
   color: black;
   font-size: 2em;
   padding: 0;

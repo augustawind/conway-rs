@@ -62,27 +62,43 @@
 			</form>
 		</div>
 
+		<div class="row" id="status-box">
+			<div id="status-label">status</div>
+			<div id="status-output">Connecting...</div>
+		</div>
+
 		<div class="row" id="game">
-			<div class="three columns" id="status-box">
-				<div id="status-label">status</div>
-				<div id="status-output">Connecting...</div>
-				<div class="row">
-					<button class="offset-by-one-third column arrow fa fa-chevron-circle-up"
-							type="button" id="btn-scroll-up" value="scroll (2, 0)"></button>
-				</div>
-				<div class="row">
-					<button class="one column arrow fa fa-chevron-circle-left"
-							type="button" id="btn-scroll-left" value="scroll (-2, 0)"></button>
-					<button class="offset-by-two-thirds column arrow fa fa-chevron-circle-right"
-							type="button" id="btn-scroll-right" value="scroll (0, 2)"></button>
-				</div>
-				<div class="row">
-					<button class="offset-by-one-third column arrow fa fa-chevron-circle-down"
-						 type="button" id="btn-scroll-down" value="scroll (0, -2)"></button>
-				</div>
+			<pre id="grid-output"></pre>
+		</div>
+
+		<div class="row" id="controls">
+			<div class="one column">
+				<button id="btn-play" class="fa fa-play"
+						type="button" value="play"></button>
 			</div>
-			<div class="nine columns">
-				<pre id="grid-output"></pre>
+			<div class="one column">
+				<button id="btn-pause" class="fa fa-pause"
+						type="button" value="pause"></button>
+			</div>
+			<div class="one column">
+				<button id="btn-pause" class="fa fa-pause"
+						type="button" value="pause"></button>
+			</div>
+			<div class="one column">
+				<button id="btn-scroll-up" class="fa fa-chevron-circle-up"
+						type="button" value="scroll (2, 0)"></button>
+			</div>
+			<div class="one column">
+				<button id="btn-scroll-down" class="fa fa-chevron-circle-down"
+					 type="button" value="scroll (0, -2)"></button>
+			</div>
+			<div class="one column">
+				<button id="btn-scroll-left" class="fa fa-chevron-circle-left"
+						type="button" value="scroll (-2, 0)"></button>
+			</div>
+			<div class="one column">
+				<button id="btn-scroll-right" class="fa fa-chevron-circle-right"
+						type="button" value="scroll (0, 2)"></button>
 			</div>
 		</div>
 
