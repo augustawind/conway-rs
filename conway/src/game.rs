@@ -226,17 +226,21 @@ fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
 mod test {
     use super::*;
 
+    fn mk_game(cells: Vec<Point>, (width, height): (Option<u64>, Option<u64>)) -> Game {
+        Game::new(
+            Grid::new(cells),
+            Settings {
+                width,
+                height,
+                ..Default::default()
+            },
+        )
+    }
+
     // Viewport width/height should be taken from Settings if given.
     #[test]
     fn test_size_provided() {
-        let game = Game::new(
-            Grid::new(vec![Point(0, 0), Point(5, 5)]),
-            Settings {
-                width: Some(8),
-                height: Some(8),
-                ..Default::default()
-            },
-        );
+        let game = mk_game(vec![Point(0, 0), Point(5, 5)], (Some(8), Some(8)));
         assert_eq!(game.viewport.width, 8);
         assert_eq!(game.viewport.height, 8);
     }
@@ -244,24 +248,14 @@ mod test {
     // Viewport width/height should be derived from the Grid if not given in Settings.
     #[test]
     fn test_size_auto() {
-        let game = Game::new(
-            Grid::new(vec![Point(0, 0), Point(5, 5)]),
-            Settings {
-                width: None,
-                height: None,
-                ..Default::default()
-            },
-        );
+        let game = mk_game(vec![Point(0, 0), Point(5, 5)], (None, None));
         assert_eq!(game.viewport.width, 6);
         assert_eq!(game.viewport.height, 6);
     }
 
     #[test]
     fn test_survives() {
-        let game = Game::new(
-            Grid::new(vec![Point(1, 0), Point(1, 1), Point(1, 2)]),
-            Default::default(),
-        );
+        let game = mk_game(vec![Point(1, 0), Point(1, 1), Point(1, 2)], (None, None));
         assert!(
             game.survives(&Point(1, 1)),
             "a live cell with 2 live neighbors should survive"
@@ -288,15 +282,14 @@ mod test {
         use super::*;
 
         #[test]
+        fn test_scroll() {}
+
+        #[test]
         fn test_viewport_fixed_1() {
             assert_eq!(
-                Game::new(
-                    Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)]),
-                    Settings {
-                        width: Some(7),
-                        height: Some(7),
-                        ..Default::default()
-                    }
+                mk_game(
+                    vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
+                    (Some(7), Some(7)),
                 ).viewport_fixed(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
@@ -306,13 +299,9 @@ mod test {
         #[test]
         fn test_viewport_fixed_2() {
             assert_eq!(
-                Game::new(
-                    Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)]),
-                    Settings {
-                        width: Some(88),
-                        height: Some(12),
-                        ..Default::default()
-                    }
+                mk_game(
+                    vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
+                    (Some(88), Some(12))
                 ).viewport_fixed(),
                 (Point(-12, 1), Point(75, 12))
             );
@@ -321,14 +310,9 @@ mod test {
         #[test]
         fn test_viewport_fixed_3() {
             assert_eq!(
-                Game::new(
-                    // natural size = 4 x 3
-                    Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
-                    Settings {
-                        width: Some(10),
-                        height: Some(3),
-                        ..Default::default()
-                    }
+                mk_game(
+                    vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                    (Some(10), Some(3))
                 ).viewport_fixed(),
                 (Point(2, 2), Point(11, 4)),
             );
@@ -337,13 +321,9 @@ mod test {
         #[test]
         fn test_viewport_centered_1() {
             assert_eq!(
-                Game::new(
-                    Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)]),
-                    Settings {
-                        width: Some(7),
-                        height: Some(7),
-                        ..Default::default()
-                    }
+                mk_game(
+                    vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
+                    (Some(7), Some(7)),
                 ).viewport_centered(),
                 (Point(-3, -2), Point(3, 4)),
                 "should pad content to fit width/height"
@@ -353,16 +333,12 @@ mod test {
         #[test]
         fn test_viewport_centered_2() {
             assert_eq!(
-                Game::new(
+                mk_game(
                     // natural size = 66 x 33
-                    Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)]),
-                    Settings {
-                        // adjust width: 88 - 66 = +22 / 2 => x0 - 11, x1 + 11
-                        width: Some(88),
-                        // adjust height: 12 - 33 = -21 / 2 => y0 + 10, y1 - 11
-                        height: Some(12),
-                        ..Default::default()
-                    }
+                    vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
+                    // adjust width: 88 - 66 = +22 / 2 => x0 - 11, x1 + 11
+                    // adjust height: 12 - 33 = -21 / 2 => y0 + 10, y1 - 11
+                    (Some(88), Some(12))
                 ).viewport_centered(),
                 // x0[-12] - 11 = -23 // x1[53] + 11 = 64
                 // y0[1] + 10 = 11 // y1[33] - 11 = 22
@@ -373,16 +349,10 @@ mod test {
         #[test]
         fn test_viewport_centered_3() {
             assert_eq!(
-                Game::new(
+                mk_game(
                     // natural size = 4 x 3
-                    Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
-                    Settings {
-                        // adjust width: 10 - 4 = +6 / 2 => x0 - 3, x1 + 3
-                        width: Some(10),
-                        // adjust height: 3 - 3 = 0 => N/A
-                        height: Some(3),
-                        ..Default::default()
-                    }
+                    vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                    (Some(10), Some(3)),
                 ).viewport_centered(),
                 // x0[2] - 3 = -1 // x1[5] + 3 = 8
                 // y0[2] + 0 = 2 // y1[4] + 0 = 4
@@ -392,16 +362,9 @@ mod test {
 
         #[test]
         fn test_center_viewport() {
-            let mut game = Game::new(
-                // natural size = 4 x 3
-                Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
-                Settings {
-                    // adjust width: 10 - 4 = +6 / 2 => x0 - 3, x1 + 3
-                    width: Some(10),
-                    // adjust height: 3 - 3 = 0 => N/A
-                    height: Some(3),
-                    ..Default::default()
-                },
+            let mut game = mk_game(
+                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                (Some(10), Some(3)),
             );
             let expected = game.viewport_centered();
             game.center_viewport();
@@ -410,18 +373,10 @@ mod test {
 
         #[test]
         fn test_center_viewport_scrolled() {
-            let mut game = Game::new(
-                // natural size = 4 x 3
-                Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
-                Settings {
-                    // adjust width: 10 - 4 = +6 / 2 => x0 - 3, x1 + 3
-                    width: Some(10),
-                    // adjust height: 3 - 3 = 0 => N/A
-                    height: Some(3),
-                    ..Default::default()
-                },
+            let mut game = mk_game(
+                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                (Some(10), Some(3)),
             );
-
             game.scroll(-1, 2);
             let expected = game.viewport_centered();
             game.center_viewport();
