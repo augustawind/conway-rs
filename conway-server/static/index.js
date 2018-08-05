@@ -6,15 +6,6 @@ window.onload = function() {
     var gridForm = document.getElementById('grid-form');
     var gridField = document.getElementById('grid-field');
 
-    var btnPlay = document.getElementById('btn-play');
-    var btnPause = document.getElementById('btn-pause');
-    var btnStep = document.getElementById('btn-step');
-
-    var btnScrollLeft = document.getElementById('btn-scroll-left');
-    var btnScrollRight = document.getElementById('btn-scroll-right');
-    var btnScrollUp = document.getElementById('btn-scroll-up');
-    var btnScrollDown = document.getElementById('btn-scroll-down');
-
     var gridOutput = document.getElementById('grid-output');
     var statusOutput = document.getElementById('status-output');
 
@@ -50,26 +41,9 @@ window.onload = function() {
         return false;
     };
 
-    btnPlay.onclick = function() {
-        socket.send(btnPlay.value);
-    };
-    btnPause.onclick = function() {
-        socket.send(btnPause.value);
-    };
-    btnStep.onclick = function() {
-        socket.send(btnStep.value);
-    };
-
-    btnScrollLeft.onclick = function() {
-        socket.send(btnScrollLeft.value);
-    };
-    btnScrollRight.onclick = function() {
-        socket.send(btnScrollRight.value);
-    };
-    btnScrollUp.onclick = function() {
-        socket.send(btnScrollUp.value);
-    };
-    btnScrollDown.onclick = function() {
-        socket.send(btnScrollDown.value);
-    };
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('command-btn')) {
+            socket.send(event.target.value);
+        }
+    });
 };

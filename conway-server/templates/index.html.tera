@@ -60,32 +60,32 @@
 
 		<div class="row" id="control-panel">
 			<div class="one column">
-				<button id="btn-play" class="fa fa-play"
+				<button class="command-btn fa fa-play"
 						type="button" value="play"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-pause" class="fa fa-pause"
+				<button class="command-btn fa fa-pause"
 						type="button" value="pause"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-step" class="fa fa-step-forward"
+				<button class="command-btn fa fa-step-forward"
 						type="button" value="step"></button>
 			</div>
-			<div class="one column">
-				<button id="btn-scroll-up" class="fa fa-chevron-circle-up"
-						type="button" value="scroll (0, -2)"></button>
+			<div class="offset-by-one one column">
+				<button class="command-btn fa fa-angle-up"
+						type="button" value="scroll (0, -1)"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-scroll-down" class="fa fa-chevron-circle-down"
-					 type="button" value="scroll (0, 2)"></button>
+				<button class="command-btn fa fa-angle-down"
+					 type="button" value="scroll (0, 1)"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-scroll-left" class="fa fa-chevron-circle-left"
-						type="button" value="scroll (-2, 0)"></button>
+				<button class="command-btn fa fa-angle-left"
+						type="button" value="scroll (-1, 0)"></button>
 			</div>
 			<div class="one column">
-				<button id="btn-scroll-right" class="fa fa-chevron-circle-right"
-						type="button" value="scroll (2, 0)"></button>
+				<button class="command-btn fa fa-angle-right"
+						type="button" value="scroll (1, 0)"></button>
 			</div>
 		</div>
 
