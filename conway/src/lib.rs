@@ -10,7 +10,10 @@ extern crate error_chain;
 extern crate lazy_static;
 #[macro_use]
 extern crate maplit;
+#[macro_use]
+extern crate serde_derive;
 extern crate num_integer;
+extern crate serde_json;
 
 pub mod config;
 pub mod game;
@@ -33,8 +36,6 @@ mod errors {
         }
 
         foreign_links {
-            ParseChar(::std::char::ParseCharError);
-            ParseInt(::std::num::ParseIntError);
             IO(::std::io::Error);
         }
     }

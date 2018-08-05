@@ -7,9 +7,10 @@ use std::path::Path;
 use std::time::Duration;
 
 use clap::ArgMatches;
+use serde_json;
 
 use game::View;
-use Result;
+use {Result, ResultExt};
 
 const VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
 const DEFAULT_CHAR_ALIVE: &str = "#";
@@ -70,13 +71,7 @@ where
     ).get_matches_from(args)
 }
 
-#[derive(Debug)]
-pub struct ConfigReader {
-    pub settings: Settings,
-    pub pattern: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Settings {
     pub delay: Duration,
     pub view: View,
@@ -88,12 +83,35 @@ pub struct Settings {
     pub char_dead: char,
 }
 
+impl Default for Settings {
+    fn default() -> Self {
+        Settings {
+            delay: Duration::from_millis(500),
+            view: View::Centered,
+            width: Some(10),
+            height: Some(10),
+            char_alive: *CHAR_ALIVE,
+            char_dead: *CHAR_DEAD,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ConfigReader {
+    pub settings: Settings,
+    pub pattern: String,
+}
+
 impl ConfigReader {
-    pub fn from_env() -> Result<ConfigReader> {
+    pub fn from_json(s: &str) -> Result<Self> {
+        serde_json::from_str(s).chain_err(|| "failed to read config from json")
+    }
+
+    pub fn from_argv() -> Result<Self> {
         ConfigReader::from_args(env::args_os())
     }
 
-    pub fn from_args<I, T>(args: I) -> Result<ConfigReader>
+    pub fn from_args<I, T>(args: I) -> Result<Self>
     where
         I: IntoIterator<Item = T>,
         T: Into<OsString> + Clone,
@@ -102,21 +120,37 @@ impl ConfigReader {
 
         let conf = ConfigReader {
             settings: Settings {
-                delay: Duration::from_millis(matches.value_of("delay").unwrap().parse()?),
+                delay: Duration::from_millis(
+                    matches
+                        .value_of("delay")
+                        .unwrap()
+                        .parse()
+                        .chain_err(|| "failed to parse integer from 'delay")?,
+                ),
 
                 view: matches.value_of("view").unwrap().parse()?,
 
                 width: matches
                     .value_of("width")
                     .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
-                    .transpose()?,
+                    .transpose()
+                    .chain_err(|| "failed to parse integer from 'width'")?,
                 height: matches
                     .value_of("height")
                     .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
-                    .transpose()?,
+                    .transpose()
+                    .chain_err(|| "failed to parse integer from 'height")?,
 
-                char_alive: matches.value_of("live_char").unwrap().parse()?,
-                char_dead: matches.value_of("dead_char").unwrap().parse()?,
+                char_alive: matches
+                    .value_of("live_char")
+                    .unwrap()
+                    .parse()
+                    .chain_err(|| "failed to parse character from 'live_char'")?,
+                char_dead: matches
+                    .value_of("dead_char")
+                    .unwrap()
+                    .parse()
+                    .chain_err(|| "failed to parse character from 'dead_char'")?,
             },
             pattern: {
                 if let Some(file) = matches.value_of("file") {
@@ -131,18 +165,5 @@ impl ConfigReader {
         };
 
         Ok(conf)
-    }
-}
-
-impl Default for Settings {
-    fn default() -> Self {
-        Settings {
-            delay: Duration::from_millis(500),
-            view: View::Centered,
-            width: Some(10),
-            height: Some(10),
-            char_alive: *CHAR_ALIVE,
-            char_dead: *CHAR_DEAD,
-        }
     }
 }

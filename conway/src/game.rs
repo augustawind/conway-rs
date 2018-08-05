@@ -10,7 +10,7 @@ pub use config::Settings;
 use grid::{Grid, Point};
 use {Error, Result};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub enum View {
     Centered,
     Fixed,
@@ -25,7 +25,7 @@ impl FromStr for View {
             "centered" => Ok(View::Centered),
             "fixed" => Ok(View::Fixed),
             "follow" => Ok(View::Follow),
-            s => bail!("'{}' is not a valid choice", s),
+            s => bail!("invalid value for view '{}'", s),
         }
     }
 }
@@ -87,7 +87,7 @@ pub struct Game {
 
 impl Game {
     pub fn load() -> Result<Game> {
-        let ConfigReader { settings, pattern } = ConfigReader::from_env()?;
+        let ConfigReader { settings, pattern } = ConfigReader::from_argv()?;
         let grid = pattern.parse()?;
         Ok(Game::new(grid, settings))
     }
