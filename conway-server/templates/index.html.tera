@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 
-	<!-- basic page needs
-	–––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	<meta charset="utf8">
-	<title>{{ title }}</title>
-	<meta name="description" content="A web app that allows the user to configure and run a Conway's Game of Life simulation.">
+  <!-- basic page needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf8">
+  <title>{{ title }}</title>
+  <meta name="description" content="A web app that allows the user to configure and run a Conway's Game of Life simulation.">
 
   <!-- mobile-specific meta
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -15,119 +15,119 @@
   <!-- fonts
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-			integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+      integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
   <!-- css
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	<link rel="stylesheet" href="static/css/normalize.css">
-	<link rel="stylesheet" href="static/css/skeleton.css">
-	<link rel="stylesheet" href="static/style.css">
+  <link rel="stylesheet" href="static/css/normalize.css">
+  <link rel="stylesheet" href="static/css/skeleton.css">
+  <link rel="stylesheet" href="static/style.css">
 
   <!-- favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	<link rel="icon" type="image/png" href="static/images/favicon.png">
+  <link rel="icon" type="image/png" href="static/images/favicon.png">
 
 </head>
 <body>
 
   <!-- main page layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	<div class="container">
+  <div class="container">
 
-		<header><h1>Conway's Game of Life</h1></header>
+    <header><h1>Conway's Game of Life</h1></header>
 
-		<form id="grid-form">
-			<div class="row" id="designer-box">
-					<div class="nine columns">
-						<div>
-							<label>pattern</label>
-							<div class="help-tip">
-								<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
-								Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
-								screen.</p>
-							</div>
-						</div>
-						<textarea id="grid-field" rows="20" cols="20" wrap="off"
-								placeholder="Design your starting pattern here."
-								spellcheck="false"
-								>{{ default_grid | trim }}</textarea>
-					</div>
+    <form id="grid-form">
+      <div class="row" id="designer-box">
+          <div class="nine columns">
+            <div>
+              <label>pattern</label>
+              <div class="help-tip">
+                <p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+                Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+                screen.</p>
+              </div>
+            </div>
+            <textarea id="grid-field" rows="20" cols="20" wrap="off"
+                placeholder="Design your starting pattern here."
+                spellcheck="false"
+                >{{ default_grid | trim }}</textarea>
+          </div>
 
-					<div class="three columns">
-						<div>
-							<label>viewport</label>
-							<div class="help-tip">
-								<p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
-								Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
-								screen.</p>
-							</div>
-						</div>
-						<select id="view">
-							<option value="fixed" selected>Fixed</option>
-							<option value="centered">Centered</option>
-						</select>
+          <div class="three columns">
+            <div>
+              <label>viewport</label>
+              <div class="help-tip">
+                <p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+                Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+                screen.</p>
+              </div>
+            </div>
+            <select id="view">
+              <option value="fixed" selected>Fixed</option>
+              <option value="centered">Centered</option>
+            </select>
 
-						<div>
-							<label>tick delay</label>
-							<div class="help-tip">
-								<p>Milliseconds to wait between each tick, when autoplay is on.</p>
-							</div>
-						</div>
-						<input id="tick-delay" type="text" value="500" maxlength="4" />
-					</div>
-			</div>
+            <div>
+              <label>tick delay</label>
+              <div class="help-tip">
+                <p>Milliseconds to wait between each tick, when autoplay is on.</p>
+              </div>
+            </div>
+            <input id="tick-delay" type="text" value="500" maxlength="4" />
+          </div>
+      </div>
 
-			<div class="row" id="grid-submit-container">
-				<button type="submit" id="grid-submit">Load Pattern</button>
-			</div>
-		</form>
+      <div class="row" id="grid-submit-container">
+        <button type="submit" id="grid-submit">Load Pattern</button>
+      </div>
+    </form>
 
-		<div id="game-area">
-			<div class="row" id="message-box">
-				<div id="messages-label">messages</div>
-				<ul id="messages"></ul>
-			</div>
+    <div id="game-area">
+      <div class="row" id="message-box">
+        <div id="messages-label">messages</div>
+        <ul id="messages"></ul>
+      </div>
 
-			<div class="row" id="grid-container">
-				<div id="grid-output"></div>
-			</div>
+      <div class="row" id="grid-container">
+        <div id="grid-output"></div>
+      </div>
 
-			<div class="row" id="control-panel">
-				<div class="four columns">
-					<button class="fa fa-play"
-							type="button" value="play" title="Play"></button>
-					<button class="fa fa-pause"
-							type="button" value="pause" title="Pause"></button>
-					<button class="fa fa-step-forward"
-							type="button" value="step" title="Step"></button>
-				</div>
+      <div class="row" id="control-panel">
+        <div class="four columns">
+          <button class="fa fa-play"
+              type="button" value="play" title="Play"></button>
+          <button class="fa fa-pause"
+              type="button" value="pause" title="Pause"></button>
+          <button class="fa fa-step-forward"
+              type="button" value="step" title="Step"></button>
+        </div>
 
-				<div class="five columns">
-					<button class="fa fa-angle-double-up"
-							type="button" value="scroll (0, 5)" title="Scroll Up"></button>
-					<button class="fa fa-angle-double-down"
-						 type="button" value="scroll (0, -5)" title="Scroll Down"></button>
-					<button class="fa fa-angle-double-left"
-							type="button" value="scroll (5, 0)" title="Scroll Left"></button>
-					<button class="fa fa-angle-double-right"
-							type="button" value="scroll (-5, 0)" title="Scroll Right"></button>
-				</div>
+        <div class="five columns">
+          <button class="fa fa-angle-double-up"
+              type="button" value="scroll (0, 5)" title="Scroll Up"></button>
+          <button class="fa fa-angle-double-down"
+             type="button" value="scroll (0, -5)" title="Scroll Down"></button>
+          <button class="fa fa-angle-double-left"
+              type="button" value="scroll (5, 0)" title="Scroll Left"></button>
+          <button class="fa fa-angle-double-right"
+              type="button" value="scroll (-5, 0)" title="Scroll Right"></button>
+        </div>
 
-				<div class="three columns">
-					<button class="fa fa-redo"
-							type="button" value="restart" title="Restart Game"></button>
-				</div>
-			</div>
-		</div>
+        <div class="three columns">
+          <button class="fa fa-redo"
+              type="button" value="restart" title="Restart Game"></button>
+        </div>
+      </div>
+    </div>
 
-	</div>
+  </div>
 
-	<!-- scripts
+  <!-- scripts
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-	<script src="static/index.js"></script>
+  <script src="static/index.js"></script>
 
-	<!-- end document
+  <!-- end document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 </body>
 </html>
