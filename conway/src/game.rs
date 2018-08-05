@@ -5,7 +5,6 @@ use std::thread;
 
 use num_integer::Integer;
 
-use config::ConfigReader;
 pub use config::Settings;
 use grid::{Grid, Point};
 use {Error, Result};
@@ -86,12 +85,6 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn load() -> Result<Game> {
-        let ConfigReader { settings, pattern } = ConfigReader::from_argv()?;
-        let grid = pattern.parse()?;
-        Ok(Game::new(grid, settings))
-    }
-
     pub fn new(grid: Grid, opts: Settings) -> Game {
         let mut swap = grid.clone();
         swap.clear();

@@ -9,7 +9,7 @@ use std::time::Duration;
 use clap::ArgMatches;
 use serde_json;
 
-use game::View;
+use game::{Game, View};
 use {Result, ResultExt};
 
 const VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
@@ -97,18 +97,22 @@ impl Default for Settings {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ConfigReader {
+pub struct GameConfig {
     pub settings: Settings,
     pub pattern: String,
 }
 
-impl ConfigReader {
+impl GameConfig {
+    pub fn build(self) -> Result<Game> {
+        Ok(Game::new(self.pattern.parse()?, self.settings))
+    }
+
     pub fn from_json(s: &str) -> Result<Self> {
         serde_json::from_str(s).chain_err(|| "failed to read config from json")
     }
 
     pub fn from_argv() -> Result<Self> {
-        ConfigReader::from_args(env::args_os())
+        GameConfig::from_args(env::args_os())
     }
 
     pub fn from_args<I, T>(args: I) -> Result<Self>
@@ -118,7 +122,7 @@ impl ConfigReader {
     {
         let matches = parse_args(args);
 
-        let conf = ConfigReader {
+        let conf = GameConfig {
             settings: Settings {
                 delay: Duration::from_millis(
                     matches

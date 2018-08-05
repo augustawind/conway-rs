@@ -3,7 +3,7 @@ extern crate conway;
 use std::io;
 use std::io::prelude::*;
 
-use conway::{Game, Result};
+use conway::{GameConfig, Result};
 
 fn main() {
     if let Err(ref e) = run() {
@@ -26,7 +26,7 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    let mut game = Game::load()?;
+    let mut game = GameConfig::from_argv()?.build()?;
     let mut stdout = io::stdout();
     for frame in game.iter() {
         write!(stdout, "\n{}", frame)?;

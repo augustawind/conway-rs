@@ -20,7 +20,7 @@ pub mod game;
 pub mod grid;
 pub mod point;
 
-pub use config::Settings;
+pub use config::GameConfig;
 pub use errors::*;
 pub use game::{Game, View};
 pub use grid::Grid;
