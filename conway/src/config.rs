@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::default::Default;
 use std::env;
 use std::ffi::OsString;
 use std::fs::read_to_string;
-use std::path::PathBuf;
+use std::path::Path;
 use std::time::Duration;
 
 use clap::ArgMatches;
@@ -16,18 +16,14 @@ const DEFAULT_CHAR_ALIVE: &str = "#";
 const DEFAULT_CHAR_DEAD: &str = "-";
 
 lazy_static! {
-    static ref SAMPLE_DIR: PathBuf = PathBuf::from("./sample_patterns");
-    pub static ref SAMPLE_PATTERNS: HashMap<&'static str, &'static str> = hashmap!{
+    static ref SAMPLE_DIR: &'static Path = Path::new("./sample_patterns");
+    pub static ref SAMPLE_PATTERNS: BTreeMap<&'static str, &'static str> = btreemap!{
         "beacon" => include_str!("../sample_patterns/blinker"),
         "blinker" => include_str!("../sample_patterns/blinker"),
         "glider" => include_str!("../sample_patterns/glider"),
         "toad" => include_str!("../sample_patterns/toad"),
     };
-    static ref SAMPLE_CHOICES: Vec<&'static str> = {
-        let mut keys: Vec<&str> = SAMPLE_PATTERNS.keys().map(|k| *k).collect();
-        keys.sort();
-        keys
-    };
+    static ref SAMPLE_CHOICES: Vec<&'static str> = SAMPLE_PATTERNS.keys().map(|k| *k).collect();
     pub static ref CHAR_ALIVE: char = DEFAULT_CHAR_ALIVE.parse().unwrap();
     pub static ref CHAR_DEAD: char = DEFAULT_CHAR_DEAD.parse().unwrap();
 }
