@@ -25,6 +25,20 @@ impl ops::Sub for Point {
     }
 }
 
+impl ops::AddAssign for Point {
+    fn add_assign(&mut self, rhs: Point) {
+        self.0 += rhs.0;
+        self.1 += rhs.1;
+    }
+}
+
+impl ops::SubAssign for Point {
+    fn sub_assign(&mut self, rhs: Point) {
+        self.0 -= rhs.0;
+        self.1 -= rhs.1;
+    }
+}
+
 impl Default for Point {
     fn default() -> Self {
         Point(0, 0)

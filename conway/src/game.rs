@@ -139,7 +139,13 @@ impl Game {
     }
 
     pub fn scroll(&mut self, dx: i64, dy: i64) {
-        self.viewport.scroll = self.viewport.scroll - Point(dx, dy);
+        self.viewport.scroll += Point(dx, dy);
+    }
+
+    pub fn center_viewport(&mut self) {
+        let (origin, _) = self.viewport_centered();
+        let Point(dx, dy) = origin - self.viewport.origin - self.viewport.scroll;
+        self.scroll(dx, dy);
     }
 
     pub fn viewport(&self) -> (Point, Point) {
@@ -153,8 +159,8 @@ impl Game {
     pub fn viewport_fixed(&self) -> (Point, Point) {
         let Point(x0, y0) = self.viewport.origin + self.viewport.scroll;
         let p1 = Point(
-            x0 + self.viewport.width as i64,
-            y0 + self.viewport.height as i64,
+            x0 + self.viewport.width as i64 - 1,
+            y0 + self.viewport.height as i64 - 1,
         );
         (Point(x0, y0), p1)
     }
@@ -169,7 +175,10 @@ impl Game {
         );
 
         let ((dx0, dx1), (dy0, dy1)) = (split_int(dx), split_int(dy));
-        (Point(x0 - dx0, y0 - dy0), Point(x1 + dx1, y1 + dy1))
+        (
+            Point(x0 - dx0, y0 - dy0) + self.viewport.scroll,
+            Point(x1 + dx1, y1 + dy1) + self.viewport.scroll,
+        )
     }
 
     /// Return whether the Game is over. This happens with the Grid is empty.
@@ -332,6 +341,44 @@ mod test {
                 // y0[2] + 0 = 2 // y1[4] + 0 = 4
                 (Point(-1, 2), Point(8, 4)),
             );
+        }
+
+        #[test]
+        fn test_center_viewport() {
+            let mut game = Game::new(
+                // natural size = 4 x 3
+                Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
+                Settings {
+                    // adjust width: 10 - 4 = +6 / 2 => x0 - 3, x1 + 3
+                    width: Some(10),
+                    // adjust height: 3 - 3 = 0 => N/A
+                    height: Some(3),
+                    ..Default::default()
+                },
+            );
+            let expected = game.viewport_centered();
+            game.center_viewport();
+            assert_eq!(game.viewport_fixed(), expected);
+        }
+
+        #[test]
+        fn test_center_viewport_scrolled() {
+            let mut game = Game::new(
+                // natural size = 4 x 3
+                Grid::new(vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)]),
+                Settings {
+                    // adjust width: 10 - 4 = +6 / 2 => x0 - 3, x1 + 3
+                    width: Some(10),
+                    // adjust height: 3 - 3 = 0 => N/A
+                    height: Some(3),
+                    ..Default::default()
+                },
+            );
+
+            game.scroll(-1, 2);
+            let expected = game.viewport_centered();
+            game.center_viewport();
+            assert_eq!(game.viewport_fixed(), expected);
         }
     }
 
