@@ -64,37 +64,27 @@
 			</div>
 
 			<div class="row" id="control-panel">
-				<div class="one column">
+				<div class="four columns">
 					<button class="command-btn fa fa-play"
 							type="button" value="play" title="Play"></button>
-				</div>
-				<div class="one column">
 					<button class="command-btn fa fa-pause"
 							type="button" value="pause" title="Pause"></button>
-				</div>
-				<div class="one column">
 					<button class="command-btn fa fa-step-forward"
 							type="button" value="step" title="Step"></button>
 				</div>
 
-				<div class="offset-by-one one column">
+				<div class="five columns">
 					<button class="command-btn fa fa-angle-double-up"
 							type="button" value="scroll (0, 5)" title="Scroll Up"></button>
-				</div>
-				<div class="one column">
 					<button class="command-btn fa fa-angle-double-down"
 						 type="button" value="scroll (0, -5)" title="Scroll Down"></button>
-				</div>
-				<div class="one column">
 					<button class="command-btn fa fa-angle-double-left"
 							type="button" value="scroll (5, 0)" title="Scroll Left"></button>
-				</div>
-				<div class="one column">
 					<button class="command-btn fa fa-angle-double-right"
 							type="button" value="scroll (-5, 0)" title="Scroll Right"></button>
 				</div>
 
-				<div class="offset-by-one one column">
+				<div class="three columns">
 					<button class="command-btn fa fa-redo"
 							type="button" value="restart" title="Restart Game"></button>
 				</div>
