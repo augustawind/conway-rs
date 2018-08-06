@@ -5,21 +5,24 @@ header {
 
 #designer-box {
   margin-bottom: 0;
-  text-align: right;
+}
+
+#grid-form .label {
+  margin-right: 5px;
+  vertical-align: top;
+  width: 100%;
 }
 
 #grid-form label {
-  margin-right: 5px;
-  vertical-align: top;
   font-size: 18px;
   font-variant: small-caps;
-  width: 100%;
-  display: block;
+  display: inline-block;
 }
 
 #grid-form select,
+#grid-form option,
 #grid-form input {
-  width: max-content;
+  width: 100%;
 }
 
 #grid-field {
@@ -29,6 +32,10 @@ header {
   line-height: 0.75;
   font-size: large;
   font-family: Courier, "Courier New", monospace;
+}
+
+#grid-submit-container {
+  text-align: right;
 }
 
 #game-area {

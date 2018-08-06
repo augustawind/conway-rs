@@ -39,23 +39,8 @@
 
     <form id="grid-form">
       <div class="row" id="designer-box">
-          <div class="nine columns">
-            <div>
-              <label>pattern</label>
-              <div class="help-tip">
-                <p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
-                Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
-                screen.</p>
-              </div>
-            </div>
-            <textarea id="grid-field" rows="20" cols="20" wrap="off"
-                placeholder="Design your starting pattern here."
-                spellcheck="false"
-                >{{ default_grid | trim }}</textarea>
-          </div>
-
-          <div class="three columns">
-            <div>
+          <div class="two columns">
+            <div class="label">
               <label>viewport</label>
               <div class="help-tip">
                 <p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
@@ -68,13 +53,28 @@
               <option value="centered">Centered</option>
             </select>
 
-            <div>
+            <div class="label">
               <label>tick delay</label>
               <div class="help-tip">
                 <p>Milliseconds to wait between each tick, when autoplay is on.</p>
               </div>
             </div>
             <input id="tick-delay" type="text" value="500" maxlength="4" />
+          </div>
+
+          <div class="ten columns">
+            <div class="label">
+              <label>pattern</label>
+              <div class="help-tip">
+                <p>How to display the grid. Select 'Fixed' for a fixed viewport that can be scrolled.
+                Select 'Centered' for a dynamic viewport that keeps cell activity at the center of the
+                screen.</p>
+              </div>
+            </div>
+            <textarea id="grid-field" rows="20" cols="20" wrap="off"
+                placeholder="Design your starting pattern here."
+                spellcheck="false"
+                >{{ default_grid | trim }}</textarea>
           </div>
       </div>
 
