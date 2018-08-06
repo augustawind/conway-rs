@@ -9,7 +9,8 @@ pub use config::Settings;
 use grid::{Grid, Point};
 use {Error, Result};
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum View {
     Centered,
     Fixed,

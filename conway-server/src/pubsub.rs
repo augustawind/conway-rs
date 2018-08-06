@@ -7,7 +7,7 @@ use serde_json;
 use ws;
 
 use conway::config::Settings;
-use conway::{Game, Point, View};
+use conway::{Game, GameConfig, Point, View};
 
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
@@ -142,12 +142,18 @@ impl ws::Handler for Server {
                 self.out.send(Message::new().pattern(game.draw()))
             }
             Some("new-grid") => {
-                let pattern = args.next().unwrap_or_default();
-                game.reset_grid(pattern.parse().unwrap());
+                let data = args.next().unwrap_or_default();
+
+                *game = match GameConfig::from_json(data).and_then(|config| config.build()) {
+                    Ok(game) => game,
+                    Err(err) => {
+                        return self.out.send(Message::new().status(err.to_string_chain()));
+                    }
+                };
                 self.initial_game = game.clone();
                 self.out.send(
                     Message::new()
-                        .status("New game started with pattern.")
+                        .status("Started new game.")
                         .pattern(game.draw()),
                 )
             }

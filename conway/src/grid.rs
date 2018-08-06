@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::str::FromStr;
 
 pub use point::Point;
-use {Error, Result};
+use {Error, ErrorKind, Result};
 
 pub const READ_CHAR_ALIVE: char = 'x';
 pub const READ_CHAR_DEAD: char = '.';
@@ -132,7 +132,7 @@ impl FromStr for Grid {
                     cells.push(Point(x as i64, y as i64));
                 // Dead Points are ignored, and any other symbol is an error.
                 } else if ch != READ_CHAR_DEAD {
-                    bail!("unknown character: '{}'", ch);
+                    bail!(ErrorKind::ParseGrid(format!("unknown character: '{}'", ch)));
                 }
             }
         }

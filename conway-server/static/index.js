@@ -52,14 +52,28 @@ window.onload = function() {
         }, 500);
     };
 
-    gridForm.onsubmit = function(e) {
-        e.preventDefault();
+    gridForm.onsubmit = function(event) {
+        event.preventDefault();
         gameArea.scrollIntoView({
             block: 'start',
             inline: 'nearest',
             behavior: 'smooth'
         });
-        var cmd = 'new-grid ' + gridField.value;
+
+        var fields = event.target.elements;
+
+        var delay_ms = fields['tick-delay'].value;
+        var secs = Math.trunc(delay_ms / 1000);
+        var nanos = (delay_ms - (secs * 1000)) * 1000000;
+        var delay = { secs: secs, nanos: nanos };
+
+        var settings = {
+            delay: delay,
+            view: fields['view'].value,
+        };
+        var payload = JSON.stringify({ pattern: gridField.value, settings: settings });
+
+        var cmd = 'new-grid ' + payload;
         socket.send(cmd);
         return false;
     };

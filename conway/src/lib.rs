@@ -13,6 +13,7 @@ extern crate maplit;
 #[macro_use]
 extern crate serde_derive;
 extern crate num_integer;
+extern crate serde;
 extern crate serde_json;
 
 pub mod config;
@@ -29,6 +30,10 @@ pub use point::Point;
 mod errors {
     error_chain! {
         errors {
+            ParseGrid(s: String) {
+                description("failed to parse grid")
+                display("failed to parse grid: {}", s)
+            }
             ParsePoint(s: String) {
                 description("failed to parse Point")
                 display("failed to parse Point: {}", s)
@@ -41,6 +46,12 @@ mod errors {
     }
 
     impl Error {
+        pub fn to_string_chain(&self) -> String {
+            let mut output: ::std::io::Cursor<Vec<u8>> = ::std::io::Cursor::new(Vec::new());
+            self.write_err_chain(&mut output);
+            output.into_inner().into_iter().map(char::from).collect()
+        }
+
         pub fn write_err_chain<T: ::std::io::Write>(&self, output: &mut T) {
             let errmsg = "Well, shit. Encountered an error while trying to write another error. \
                           Good luck trying to figure it out!";

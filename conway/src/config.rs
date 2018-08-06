@@ -71,7 +71,8 @@ where
     ).get_matches_from(args)
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Settings {
     pub delay: Duration,
     pub view: View,
@@ -96,7 +97,7 @@ impl Default for Settings {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct GameConfig {
     pub settings: Settings,
     pub pattern: String,
