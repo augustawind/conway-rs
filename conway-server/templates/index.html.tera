@@ -94,13 +94,15 @@
       </div>
 
       <div class="row" id="control-panel">
-        <div class="four columns">
+        <div class="five columns">
           <button class="fa fa-play"
               type="button" value="play" title="Play"></button>
           <button class="fa fa-pause"
               type="button" value="pause" title="Pause"></button>
           <button class="fa fa-step-forward"
               type="button" value="step" title="Step"></button>
+          <button class="fa fa-crosshairs"
+              type="button" value="center" title="Center View"></button>
         </div>
 
         <div class="five columns">
@@ -114,7 +116,7 @@
               type="button" value="scroll (-5, 0)" title="Scroll Right"></button>
         </div>
 
-        <div class="three columns">
+        <div class="two columns">
           <button class="fa fa-redo"
               type="button" value="restart" title="Restart Game"></button>
         </div>

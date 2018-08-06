@@ -141,6 +141,14 @@ impl ws::Handler for Server {
                 game.scroll(dx, dy);
                 self.out.send(Message::new().pattern(game.draw()))
             }
+            Some("center") => {
+                game.center_viewport();
+                self.out.send(
+                    Message::new()
+                        .status("Viewport centered on cell activity.")
+                        .pattern(game.draw()),
+                )
+            }
             Some("new-grid") => {
                 let data = args.next().unwrap_or_default();
 

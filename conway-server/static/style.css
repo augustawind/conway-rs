@@ -91,9 +91,17 @@ header {
 }
 
 #control-panel {
-  width: 100%;
-  box-sizing: border-box;
   text-align: center;
+}
+
+@media (min-width: 550px) {
+  #control-panel > div:first-child {
+    text-align: left;
+  }
+
+  #control-panel > div:last-child {
+    text-align: right;
+  }
 }
 
 /*
