@@ -60,14 +60,21 @@ window.onload = function() {
             behavior: 'smooth'
         });
 
-        var fields = event.target.elements;
+        var fontSize = parseFloat(getComputedStyle(gridOutput).getPropertyValue('font-size'));
+        var width = Math.ceil(gridOutput.clientWidth / (fontSize * 0.62));
+        var height = Math.ceil(gridOutput.clientHeight / (fontSize * 0.52));
 
+        var fields = event.target.elements;
         var delay_ms = fields['tick-delay'].value;
         var secs = Math.trunc(delay_ms / 1000);
         var nanos = (delay_ms - (secs * 1000)) * 1000000;
         var delay = { secs: secs, nanos: nanos };
 
         var settings = {
+            width: width,
+            height: height,
+            char_alive: CHAR_ALIVE,
+            char_dead: CHAR_DEAD,
             delay: delay,
             view: fields['view'].value,
         };

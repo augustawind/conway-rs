@@ -86,6 +86,7 @@ header {
   box-sizing: border-box;
   overflow: hidden;
   line-height: 1ex;
+  white-space: pre;
   font-size: xx-large;
 }
 
