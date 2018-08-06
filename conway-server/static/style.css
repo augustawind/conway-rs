@@ -32,8 +32,9 @@ header {
 }
 
 #game-area {
-  height: 97vh;
+  height: 98vh;
   margin-top: 3em;
+  margin-bottom: auto;
 }
 
 #message-box {
@@ -48,9 +49,10 @@ header {
 }
 
 #messages {
-  height: 4em;
+  height: 7vh;
+  min-height: 2em;
   margin: 0;
-  padding: 0;
+  padding: 0.2em 0;
   resize: vertical;
   overflow: scroll;
   white-space: pre;
@@ -73,10 +75,10 @@ header {
 
 #grid-container {
   width: 100%;
-  height: 80%;
+  height: 76vh;
   margin: 0.2em 0 0.5em 0;
   border: 1px solid #bbb;
-  padding: 2%;
+  padding: 1.5%;
   box-sizing: border-box;
 }
 

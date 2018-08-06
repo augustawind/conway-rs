@@ -65,8 +65,8 @@ window.onload = function() {
 
         // Compute width and height to fit containing element.
         var fontSize = parseFloat(getComputedStyle(gridOutput).getPropertyValue('font-size'));
-        settings.width = Math.ceil(gridOutput.clientWidth / (fontSize * 0.62));
-        settings.height = Math.ceil(gridOutput.clientHeight / (fontSize * 0.52));
+        settings.width = Math.ceil(gridOutput.clientWidth / (fontSize * 0.61));
+        settings.height = Math.ceil(gridOutput.clientHeight / (fontSize * 0.51));
 
         var fields = event.target.elements;
 
