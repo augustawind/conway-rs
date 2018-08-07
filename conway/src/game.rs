@@ -140,8 +140,8 @@ impl Game {
 
     pub fn center_viewport(&mut self) {
         let (origin, _) = self.viewport_centered();
-        let Point(dx, dy) = origin - self.viewport.origin - self.viewport.scroll;
-        self.scroll(dx, dy);
+        let Point(x, y) = origin - self.viewport.origin;
+        self.viewport.scroll = Point(x, y);
     }
 
     pub fn viewport(&self) -> (Point, Point) {
@@ -173,10 +173,7 @@ impl Game {
         );
 
         let ((dx0, dx1), (dy0, dy1)) = (split_int(dx), split_int(dy));
-        (
-            Point(x0 - dx0, y0 - dy0) + self.viewport.scroll,
-            Point(x1 + dx1, y1 + dy1) + self.viewport.scroll,
-        )
+        (Point(x0 - dx0, y0 - dy0), Point(x1 + dx1, y1 + dy1))
     }
 
     /// Return whether the Game is over. This happens with the Grid is empty.
@@ -381,7 +378,7 @@ mod test {
             );
         }
 
-        // Test that `Game.viewport_centered` adjusts for scroll.
+        // Test that `Game.viewport_centered` ignores current scroll.
         #[test]
         fn test_viewport_centered_with_scroll() {
             let mut game = mk_game(
@@ -389,7 +386,7 @@ mod test {
                 (Some(10), Some(3)),
             );
             game.scroll(1, -5);
-            assert_eq!(game.viewport_centered(), (Point(0, -3), Point(9, -1)));
+            assert_eq!(game.viewport_centered(), (Point(-1, 2), Point(8, 4)));
         }
 
         // Test `Game.scroll`.
