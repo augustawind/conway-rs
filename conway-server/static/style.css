@@ -81,9 +81,9 @@ header {
 }
 
 #grid-container {
-  width: 100%;
+  width: auto;
   height: 76vh;
-  margin: 0.2em 0 0.5em 0;
+  margin: 0.2em auto 0.5em auto;
   border: 1px solid #bbb;
   padding: 1.5%;
   box-sizing: border-box;
@@ -96,7 +96,7 @@ header {
   overflow: hidden;
   line-height: 1ex;
   white-space: pre;
-  font-size: xx-large;
+  font-size: large;
 }
 
 #control-panel {
