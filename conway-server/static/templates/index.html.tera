@@ -20,8 +20,8 @@
 
   <!-- css
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="stylesheet" href="static/css/normalize.css">
-  <link rel="stylesheet" href="static/css/skeleton.css">
+  <link rel="stylesheet" href="static/vendor/normalize.css">
+  <link rel="stylesheet" href="static/vendor/skeleton.css">
   <link rel="stylesheet" href="static/style.css">
 
   <!-- favicon
