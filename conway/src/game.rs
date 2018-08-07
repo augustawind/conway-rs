@@ -99,12 +99,14 @@ impl Game {
             scroll: Point(0, 0),
         };
 
-        Game {
+        let mut game = Game {
             grid,
             swap,
             opts,
             viewport,
-        }
+        };
+        game.center_viewport();
+        game
     }
 
     pub fn reset_grid(&mut self, grid: Grid) {
