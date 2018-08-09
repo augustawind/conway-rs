@@ -3,4 +3,4 @@
 **/Session.vim
 .tern-port
 **/node_modules/
-**/dist/main.js
+**/dist/*
