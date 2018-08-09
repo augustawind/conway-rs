@@ -117,6 +117,8 @@ window.onload = function() {
     const reconnect = function(silent) {
         if (!silent)
             addMessage('Attempting to reconnect...');
+        // FIXME -> once WebSocket loses connection a new one must be created
+        // socket.io will fix this
         socket.dispatchEvent(new Event('open'));
     };
 
@@ -136,7 +138,6 @@ window.onload = function() {
         button.onclick = function(event) {
             if (socket.readyState !== socket.OPEN) {
                 addMessage('Disconnected from game server.');
-                reconnect();
             }
             socket.send(event.target.value);
         };
