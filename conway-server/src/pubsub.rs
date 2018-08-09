@@ -12,17 +12,24 @@ pub fn listen(addr: &str) -> ws::Result<()> {
 }
 
 #[derive(Serialize)]
-pub struct Message {
+pub struct Message<'a> {
     status: Option<String>,
     pattern: Option<String>,
+    #[serde(skip_serializing)]
+    out: &'a ws::Sender,
 }
 
-impl Message {
-    fn new() -> Self {
+impl<'a> Message<'a> {
+    fn new(out: &'a ws::Sender) -> Self {
         Message {
             status: None,
             pattern: None,
+            out,
         }
+    }
+
+    fn send(self) -> ws::Result<()> {
+        self.out.send(self)
     }
 
     fn status<T: ToString>(mut self, status: T) -> Self {
@@ -36,7 +43,7 @@ impl Message {
     }
 }
 
-impl From<Message> for ws::Message {
+impl<'a> From<Message<'a>> for ws::Message {
     fn from(msg: Message) -> Self {
         ws::Message::Text(serde_json::to_string(&msg).unwrap())
     }
@@ -73,15 +80,18 @@ impl Server {
 
     fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
         if game.is_over() {
-            self.out.send(
-                Message::new()
-                    .status("Game is stable.")
-                    .pattern(game.draw()),
-            )
+            self.message()
+                .status("Game is stable.")
+                .pattern(game.draw())
+                .send()
         } else {
             game.tick();
-            self.out.send(Message::new().pattern(game.draw()))
+            self.message().pattern(game.draw()).send()
         }
+    }
+
+    fn message(&self) -> Message {
+        Message::new(&self.out)
     }
 }
 
@@ -124,15 +134,14 @@ impl ws::Handler for Server {
                     Err(err) => return self.out.send(format!("WARNING: {}", err)),
                 };
                 game.scroll(dx, dy);
-                self.out.send(Message::new().pattern(game.draw()))
+                self.message().pattern(game.draw()).send()
             }
             Some("center") => {
                 game.center_viewport();
-                self.out.send(
-                    Message::new()
-                        .status("Viewport centered on cell activity.")
-                        .pattern(game.draw()),
-                )
+                self.message()
+                    .status("Viewport centered on cell activity.")
+                    .pattern(game.draw())
+                    .send()
             }
             Some("new-grid") => {
                 let data = args.next().unwrap_or_default();
@@ -140,23 +149,21 @@ impl ws::Handler for Server {
                 *game = match GameConfig::from_json(data).and_then(|config| config.build()) {
                     Ok(game) => game,
                     Err(err) => {
-                        return self.out.send(Message::new().status(err.to_string_chain()));
+                        return self.message().status(err.to_string_chain()).send();
                     }
                 };
                 self.initial_game = game.clone();
-                self.out.send(
-                    Message::new()
-                        .status("Started new game.")
-                        .pattern(game.draw()),
-                )
+                self.message()
+                    .status("Started new game.")
+                    .pattern(game.draw())
+                    .send()
             }
             Some("restart") => {
                 *game = self.initial_game.clone();
-                self.out.send(
-                    Message::new()
-                        .status("Game restarted.")
-                        .pattern(game.draw()),
-                )
+                self.message()
+                    .status("Restarted game.")
+                    .pattern(game.draw())
+                    .send()
             }
             Some(arg) => self.out.send(format!(
                 "WARNING: message contained unexpected command '{}'",
