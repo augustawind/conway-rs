@@ -4,7 +4,7 @@ use rocket;
 use rocket::response::NamedFile;
 
 lazy_static! {
-    static ref BASE_DIR: &'static Path = Path::new("client/");
+    static ref BASE_DIR: &'static Path = Path::new("client/dist/");
 }
 
 pub fn server() -> rocket::Rocket {
@@ -13,7 +13,7 @@ pub fn server() -> rocket::Rocket {
 
 #[get("/", format = "text/html")]
 fn route_index() -> Option<NamedFile> {
-    NamedFile::open(BASE_DIR.join("dist/index.html")).ok()
+    NamedFile::open(BASE_DIR.join("index.html")).ok()
 }
 
 #[get("/static/<file..>")]

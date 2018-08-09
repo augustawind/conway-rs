@@ -11,8 +11,10 @@
   },
   "scripts": {
     "lint": "eslint **/*.js",
-    "build-static": "cp -nf src/*.css",
+    "clean": "rm -rf dist/*",
+    "cp-static": "cp -r $(find src/* -maxdepth 0 ! -name  '*.js' | xargs) dist/",
     "build-js": "browserify src/index.js --outfile dist/main.js",
+    "build": "npm run clean && npm run cp-static && npm run build-js",
     "watch": "watchify src/index.js --outfile dist/main.js"
   },
   "main": "src/index.js"
