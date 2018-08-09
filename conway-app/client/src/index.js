@@ -1,4 +1,12 @@
 'use strict';
+
+/*
+ * Styles.
+ */
+import './vendor/normalize.css';
+import './vendor/skeleton.css';
+import './style.css';
+
 /*
  * Constants.
  */
@@ -58,7 +66,7 @@ window.onload = function() {
 
         isOddMsg = !isOddMsg;
 
-        // If the message box was already scrolled down, auto-scroll down to reveal new message.
+            // If the message box was already scrolled down, auto-scroll down to reveal new message.
         if (isScrolledDown)
             messages.scrollTop = messages.scrollHeight - messages.clientHeight;
     };
@@ -84,8 +92,8 @@ window.onload = function() {
             break;
         case MSG_GRID:
             gridOutput.innerHTML = msg.content.trim()
-                .replace(/(\.)/g, CHAR_DEAD)
-                .replace(/(x)/g, CHAR_ALIVE);
+                                .replace(/(\.)/g, CHAR_DEAD)
+                                .replace(/(x)/g, CHAR_ALIVE);
             break;
         case MSG_ERROR:
             addMessage('ERROR: ' + msg.content);
@@ -106,27 +114,27 @@ window.onload = function() {
             inline: 'nearest',
         });
 
-        // Build the Settings object.
-        // Use hardcoded values for `char_alive` and `char_dead`.
+            // Build the Settings object.
+            // Use hardcoded values for `char_alive` and `char_dead`.
         const settings = { char_alive: CHAR_ALIVE, char_dead: CHAR_DEAD };
 
-        // Compute width and height to fit containing element.
+            // Compute width and height to fit containing element.
         const fontSize = parseFloat(getComputedStyle(gridOutput).getPropertyValue('font-size'));
         settings.width = Math.ceil(gridOutput.clientWidth / (fontSize * 0.61));
         settings.height = Math.ceil(gridOutput.clientHeight / (fontSize * 0.51));
 
         const fields = event.target.elements;
 
-        // Fetch `delay` from form and turn it into Duration json repr. for the backend.
+            // Fetch `delay` from form and turn it into Duration json repr. for the backend.
         const delay_ms = fields['tick-delay'].value;
         const delay_secs = Math.trunc(delay_ms / 1000);
         const delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
         settings.delay = { secs: delay_secs, nanos: delay_nanos };
 
-        // Fetch `view` from form.
+            // Fetch `view` from form.
         settings.view = fields['view'].value;
 
-        // Send message.
+            // Send message.
         const payload = JSON.stringify({ pattern: gridField.value, settings: settings });
         const msg = 'new-grid ' + payload;
 
@@ -140,8 +148,8 @@ window.onload = function() {
     const reconnect = function(silent) {
         if (!silent)
             addMessage('Attempting to reconnect...');
-        // FIXME -> once WebSocket loses connection a new one must be created
-        // socket.io will fix this
+            // FIXME -> once WebSocket loses connection a new one must be created
+            // socket.io will fix this
         socket.dispatchEvent(new Event('open'));
     };
 
