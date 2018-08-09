@@ -2,5 +2,5 @@
 
 members = [
     "conway",
-    "conway-server",
+    "conway-app",
 ]
