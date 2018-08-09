@@ -13,6 +13,18 @@ pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
 }
 
+#[derive(Deserialize)]
+pub enum Cmd {
+    Ping,
+    Step,
+    Play,
+    Pause,
+    Scroll(i64, i64),
+    Center,
+    NewGrid(GameConfig),
+    Restart,
+}
+
 #[derive(Serialize)]
 #[serde(tag = "kind", content = "content")]
 pub enum Message<T> {
@@ -25,13 +37,13 @@ pub enum Message<T> {
 impl<T> Message<T> {
     fn map<U, F>(self, f: F) -> Message<U>
     where
-        F: FnOnce(&T) -> U,
+        F: FnOnce(T) -> U,
     {
         match self {
-            Message::Connected(t) => Message::Connected(f(&t)),
-            Message::Status(t) => Message::Status(f(&t)),
-            Message::Grid(t) => Message::Grid(f(&t)),
-            Message::Error(t) => Message::Error(f(&t)),
+            Message::Connected(t) => Message::Connected(f(t)),
+            Message::Status(t) => Message::Status(f(t)),
+            Message::Grid(t) => Message::Grid(f(t)),
+            Message::Error(t) => Message::Error(f(t)),
         }
     }
 }
@@ -63,7 +75,7 @@ impl MessageQueue {
         self.0.append(
             &mut msgs
                 .into_iter()
-                .map(|msg: Message<T>| msg.map(|s: &T| s.to_string()))
+                .map(|msg: Message<T>| msg.map(|s: T| s.to_string()))
                 .collect(),
         )
     }
@@ -135,15 +147,14 @@ impl ws::Handler for Server {
         debug!("Received message: {:?}", msg);
         let mut game: &mut Game = &mut self.game.lock().unwrap();
 
-        let mut args = msg.as_text()?.trim().splitn(2, ' ');
-        match args.next() {
-            Some("ping") => {
+        match serde_json::from_str(msg.as_text()?) {
+            Ok(Cmd::Ping) => {
                 if self.paused {
                     return Ok(());
                 }
                 self.next_turn(&mut game)
             }
-            Some("step") => {
+            Ok(Cmd::Step) => {
                 if self.paused {
                     self.next_turn(&mut game)
                 } else {
@@ -151,7 +162,7 @@ impl ws::Handler for Server {
                     Ok(())
                 }
             }
-            Some("play") => {
+            Ok(Cmd::Play) => {
                 let was_paused = self.paused;
                 self.paused = false;
                 if was_paused {
@@ -159,40 +170,31 @@ impl ws::Handler for Server {
                 }
                 Ok(())
             }
-            Some("pause") => {
+            Ok(Cmd::Pause) => {
                 self.paused = true;
                 Ok(())
             }
-            Some("scroll") => {
-                let Point(dx, dy): Point = match args.next().unwrap_or_default().parse::<Point>() {
-                    Ok(delta) => delta,
-                    Err(err) => return Message::Error(err.to_string()).send(&self.out),
-                };
+            Ok(Cmd::Scroll(dx, dy)) => {
                 game.scroll(dx, dy);
                 Message::Grid(game.draw()).send(&self.out)
             }
-            Some("center") => {
+            Ok(Cmd::Center) => {
                 game.center_viewport();
                 Message::Grid(game.draw()).send(&self.out)
             }
-            Some("new-grid") => {
-                let data = args.next().unwrap_or_default();
-
-                *game = match GameConfig::from_json(data).and_then(|config| config.build()) {
+            Ok(Cmd::NewGrid(config)) => {
+                *game = match config.build() {
                     Ok(game) => game,
                     Err(err) => return Message::Error(err.to_string_chain()).send(&self.out),
                 };
                 self.initial_game = game.clone();
                 Message::Grid(game.draw()).send(&self.out)
             }
-            Some("restart") => {
+            Ok(Cmd::Restart) => {
                 *game = self.initial_game.clone();
                 Message::Grid(game.draw()).send(&self.out)
             }
-            Some(arg) => {
-                Message::Error(format!("received unexpected command '{}'", arg)).send(&self.out)
-            }
-            None => Message::Error("received empty message").send(&self.out),
+            Err(err) => Message::Error(format!("ERROR: invalid input: {}", err)).send(&self.out),
         }
     }
 }

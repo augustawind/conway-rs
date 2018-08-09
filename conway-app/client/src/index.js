@@ -31,6 +31,23 @@ const MSG_STATUS = 'Status';
 const MSG_GRID = 'Grid';
 const MSG_ERROR = 'Error';
 
+function CMD(name, f = null) {
+    if (!f)
+        return () => name;
+    return (...args) => Object.freeze({ [name]: f(...args) });
+}
+
+const CMD_MAP = Object.freeze({
+    ping: CMD('Ping'),
+    step: CMD('Step'),
+    play: CMD('Play'),
+    pause: CMD('Pause'),
+    scroll: CMD('Scroll', (dx, dy) => [parseInt(dx), parseInt(dy)]),
+    center: CMD('Center'),
+    newGrid: CMD('NewGrid', (grid) => grid),
+    restart: CMD('Restart')
+});
+
 function StatusBox() {
     let $box = document.getElementById('messages'),
         odd = false,
@@ -60,7 +77,7 @@ function GameClient(spec) {
     let { status, $grid } = spec,
         $socket = new WebSocket(WEBSOCKET_URL),
         send = function(msg) {
-            return $socket.send(msg);
+            return $socket.send(JSON.stringify(msg));
         },
         connected = function() {
             return $socket.readyState === $socket.OPEN;
@@ -95,7 +112,7 @@ function GameClient(spec) {
                 break;
             }
             setTimeout(function() {
-                $socket.send('ping');
+                send(CMD_MAP.ping());
             }, 500);
         }
     });
@@ -129,6 +146,12 @@ window.onload = function() {
    * Setup grid form.
    */
     $gridForm.onsubmit = function(event) {
+        if (!client.connected()) {
+            status.add('Disconnected from game server. Reconnecting...');
+            client.reconnect();
+            return;
+        }
+
         event.preventDefault();
         $gameArea.scrollIntoView({
             block: 'start',
@@ -156,14 +179,8 @@ window.onload = function() {
         settings.view = fields['view'].value;
 
       // Send message.
-        const payload = JSON.stringify({ pattern: $gridField.value, settings: settings });
-        const msg = 'new-grid ' + payload;
-
-        if (!client.connected()) {
-            status.add('Disconnected from game server.');
-            client.reconnect();
-        }
-        client.send(msg);
+        const payload = { pattern: $gridField.value, settings: settings };
+        client.send(CMD_MAP.newGrid(payload));
     };
 
   /*
@@ -181,10 +198,16 @@ window.onload = function() {
    */
     document.querySelectorAll('#control-panel button').forEach(function(button) {
         button.onclick = function(event) {
-            if (client.readyState !== client.OPEN) {
-                status.add('Disconnected from game server.');
-            }
-            client.send(event.target.value);
+            if (!client.connected())
+                status.add('Disconnected from the game server. Start a new game to reconnect.');
+
+            let [name, params] = event.target.value.split(':', 2),
+                makeCmd = CMD_MAP[name],
+                cmd = params
+                    ? makeCmd(...params.split(','))
+                    : makeCmd();
+
+            client.send(cmd);
         };
     });
 };

@@ -12,9 +12,9 @@
   },
   "scripts": {
     "lint": "eslint 'client/src/**/*.js'",
-    "clean": "rm -rf client/dist/* && mkdir -p client/dist/vendor/",
+    "clean": "rm -rf client/dist/",
     "ls-assets": "find client/src/* -maxdepth 0 ! -name  '*.js' | xargs",
-    "build-assets": "npm run clean && cp -rf $(npm run --silent ls-assets) client/dist/",
+    "build-assets": "cp -rf $(npm run --silent ls-assets) client/dist/",
     "build-js": "browserify client/src/index.js > client/dist/main.js",
     "build": "npm run build-assets && npm run build-js",
     "watch-assets": "npm run build-assets && chokidar $(npm run --silent ls-assets) --silent -c 'cp -rvf {path} client/dist/'",
