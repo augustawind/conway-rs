@@ -1,26 +1,28 @@
-// Constants.
-var CHAR_ALIVE = '■';
-var CHAR_DEAD = '□';
+/*
+ * Constants.
+ */
+const CHAR_ALIVE = '■';
+const CHAR_DEAD = '□';
 
 window.onload = function() {
     /*
      * Get elements.
      */
-    var gameArea = document.getElementById('game-area');
+    const gameArea = document.getElementById('game-area');
 
-    var gridForm = document.getElementById('grid-form');
-    var gridField = document.getElementById('grid-field');
+    const gridForm = document.getElementById('grid-form');
+    const gridField = document.getElementById('grid-field');
 
-    var gridOutput = document.getElementById('grid-output');
-    var messages = document.getElementById('messages');
+    const gridOutput = document.getElementById('grid-output');
+    const messages = document.getElementById('messages');
 
     /*
      * Define utility to add message to message box.
      */
-    var addMessage = function(msg) {
-        var isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
+    const addMessage = function(msg) {
+        const isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
 
-        var elem = document.createElement('li');
+        const elem = document.createElement('li');
         elem.setAttribute('class', this.isOddMsg ? 'message odd' : 'message');
         elem.textContent = msg;
         messages.appendChild(elem);
@@ -36,10 +38,9 @@ window.onload = function() {
     /*
      * Setup WebSocket.
      */
-    var socket = new WebSocket('ws://localhost:3012');
+    const socket = new WebSocket('ws://localhost:3012');
     socket.onopen = function() {
         addMessage('Connected to game server.');
-        socket.send('ping');
     };
     socket.onclose = function() {
         addMessage('Disconnected from game server.');
@@ -48,7 +49,7 @@ window.onload = function() {
         console.log('WebSocket Error: ' + error);
     };
     socket.onmessage = function(event) {
-        var data = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
         if (data.status !== null)
             addMessage(data.status);
         if (data.pattern !== null)
@@ -72,27 +73,27 @@ window.onload = function() {
 
         // Build the Settings object.
         // Use hardcoded values for `char_alive` and `char_dead`.
-        var settings = { char_alive: CHAR_ALIVE, char_dead: CHAR_DEAD };
+        const settings = { char_alive: CHAR_ALIVE, char_dead: CHAR_DEAD };
 
         // Compute width and height to fit containing element.
-        var fontSize = parseFloat(getComputedStyle(gridOutput).getPropertyValue('font-size'));
+        const fontSize = parseFloat(getComputedStyle(gridOutput).getPropertyValue('font-size'));
         settings.width = Math.ceil(gridOutput.clientWidth / (fontSize * 0.61));
         settings.height = Math.ceil(gridOutput.clientHeight / (fontSize * 0.51));
 
-        var fields = event.target.elements;
+        const fields = event.target.elements;
 
         // Fetch `delay` from form and turn it into Duration json repr. for the backend.
-        var delay_ms = fields['tick-delay'].value;
-        var delay_secs = Math.trunc(delay_ms / 1000);
-        var delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
+        const delay_ms = fields['tick-delay'].value;
+        const delay_secs = Math.trunc(delay_ms / 1000);
+        const delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
         settings.delay = { secs: delay_secs, nanos: delay_nanos };
 
         // Fetch `view` from form.
         settings.view = fields['view'].value;
 
         // Send message.
-        var payload = JSON.stringify({ pattern: gridField.value, settings: settings });
-        var msg = 'new-grid ' + payload;
+        const payload = JSON.stringify({ pattern: gridField.value, settings: settings });
+        const msg = 'new-grid ' + payload;
         socket.send(msg);
         return false;
     };

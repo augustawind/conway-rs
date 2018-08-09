@@ -18,7 +18,7 @@ struct Context {
     default_grid: &'static str,
 }
 
-pub fn rocket() -> rocket::Rocket {
+pub fn server() -> rocket::Rocket {
     rocket::ignite()
         .mount("/", routes![route_index, route_static])
         .attach(Template::fairing())

@@ -1,5 +1,8 @@
-[development]
+[global]
 template_dir = "static/templates/"
 
+[development]
+log = "normal"
+
 [production]
-template_dir = "static/templates/"
+log = "critical"
