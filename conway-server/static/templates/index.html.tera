@@ -84,9 +84,18 @@
     </form>
 
     <div id="game-area">
-      <div class="row" id="message-box">
-        <div id="messages-label">messages</div>
-        <ul id="messages"></ul>
+      <div id="message-box">
+        <div class="row" id="messages-label">
+          <div class="one column">
+            <button type="button" id="reconnect-btn">Reconnect</button>
+          </div>
+          <div class="eleven columns">
+            messages
+          </div>
+        </div>
+        <div class="row">
+            <ul id="messages"></ul>
+        </div>
       </div>
 
       <div class="row" id="grid-container">

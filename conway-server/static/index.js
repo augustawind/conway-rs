@@ -112,7 +112,21 @@ window.onload = function() {
             reconnect();
         }
         socket.send(msg);
-        return false;
+    };
+
+    const reconnect = function(silent) {
+        if (!silent)
+            addMessage('Attempting to reconnect...');
+        socket.dispatchEvent(new Event('open'));
+    };
+
+    /*
+     * Reconnect button
+     */
+    reconnectBtn.onclick = function() {
+        if (socket.readyState === socket.OPEN)
+            addMessage('Already connected to game server.');
+        reconnect(true);
     };
 
     /*
