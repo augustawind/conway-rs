@@ -1,18 +1,19 @@
 {
-  "name": "conway-server",
+  "name": "conway-app",
   "version": "0.1.0",
   "description": "A browser interface to Conway's Game of Life.",
   "author": "Dustin Rohde",
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "css-loader": "^1.0.0",
-    "style-loader": "^0.22.1",
-    "webpack": "^4.16.5",
-    "webpack-cli": "^3.1.0"
+    "browserify": "^16.2.2",
+    "watchify": "^3.11.0"
   },
   "scripts": {
     "lint": "eslint **/*.js",
-    "build": "webpack"
-  }
+    "build-static": "cp -nf src/*.css",
+    "build-js": "browserify src/index.js --outfile dist/main.js",
+    "watch": "watchify src/index.js --outfile dist/main.js"
+  },
+  "main": "src/index.js"
 }

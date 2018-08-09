@@ -1,13 +1,6 @@
 'use strict';
 
 /*
- * Styles.
- */
-import './vendor/normalize.css';
-import './vendor/skeleton.css';
-import './style.css';
-
-/*
  * Constants.
  */
 const DEFAULT_PATTERN = `
