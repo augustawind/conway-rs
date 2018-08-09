@@ -17,8 +17,8 @@
     "build-assets": "npm run clean && cp -rf $(npm run --silent ls-assets) dist/",
     "build-js": "browserify src/index.js > dist/main.js",
     "build": "npm run build-assets && npm run build-js",
-    "watch-assets": "chokidar $(npm run --silent ls-assets) -c 'cp -vrf {path} dist/'",
-    "watch-js": "watchify src/index.js --outfile dist/main.js",
+    "watch-assets": "chokidar $(npm run --silent ls-assets) --silent -c 'cp -rvf {path} dist/'",
+    "watch-js": "watchify src/index.js -v --outfile dist/main.js",
     "watch": "npm run watch-assets & npm run watch-js"
   },
   "main": "src/index.js"
