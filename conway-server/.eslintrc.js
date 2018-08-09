@@ -3,10 +3,13 @@ module.exports = {
         "browser": true
     },
     "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
     "rules": {
         "indent": [
             "error",
-            4
+            4,
         ],
         "linebreak-style": [
             "error",
