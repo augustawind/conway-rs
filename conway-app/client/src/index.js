@@ -3,6 +3,8 @@
 /*
  * Constants.
  */
+const WEBSOCKET_URL = 'ws://localhost:3012';
+
 const DEFAULT_PATTERN = `
 ............x............
 ............x............
@@ -54,6 +56,58 @@ function StatusBox() {
     });
 }
 
+function GameClient(spec) {
+    let { status, $grid } = spec,
+        $socket = new WebSocket(WEBSOCKET_URL),
+        send = function(msg) {
+            return $socket.send(msg);
+        },
+        connected = function() {
+            return $socket.readyState === $socket.OPEN;
+        },
+        reconnect = function() {
+            $socket = new WebSocket(WEBSOCKET_URL);
+        };
+
+    Object.assign($socket, {
+        onclose() {
+            status.add('Disconnected from game server.');
+        },
+        onerror(error) {
+            console.log('Error communicating with game server: ' + error);
+        },
+        onmessage(event) {
+            const msg = JSON.parse(event.data);
+            switch (msg.kind) {
+            case MSG_CONNECTED:
+                status.add('Connected to game server.');
+                break;
+            case MSG_STATUS:
+                status.add(msg.content);
+                break;
+            case MSG_GRID:
+                $grid.innerHTML = msg.content.trim()
+                    .replace(/(\.)/g, CHAR_DEAD)
+                    .replace(/(x)/g, CHAR_ALIVE);
+                break;
+            case MSG_ERROR:
+                status.add('ERROR: ' + msg.content);
+                break;
+            }
+            setTimeout(function() {
+                $socket.send('ping');
+            }, 500);
+        }
+    });
+
+    return Object.freeze({
+        $socket,
+        send,
+        connected,
+        reconnect
+    });
+}
+
 window.onload = function() {
   /*
    * Get elements.
@@ -64,40 +118,12 @@ window.onload = function() {
     $gridField.innerHTML = DEFAULT_PATTERN.trim();
     const $reconnectBtn = document.getElementById('reconnect-btn');
     const $grid = document.getElementById('grid-area');
-    const messages = StatusBox();
+    const status = StatusBox();
 
   /*
    * Setup WebSocket.
    */
-    const socket = new WebSocket('ws://localhost:3012');
-    socket.onclose = function() {
-        messages.add('Disconnected from game server.');
-    };
-    socket.onerror = function(error) {
-        console.log('Error communicating with game server: ' + error);
-    };
-    socket.onmessage = function(event) {
-        const msg = JSON.parse(event.data);
-        switch (msg.kind) {
-        case MSG_CONNECTED:
-            messages.add('Connected to game server.');
-            break;
-        case MSG_STATUS:
-            messages.add(msg.content);
-            break;
-        case MSG_GRID:
-            $grid.innerHTML = msg.content.trim()
-                .replace(/(\.)/g, CHAR_DEAD)
-                .replace(/(x)/g, CHAR_ALIVE);
-            break;
-        case MSG_ERROR:
-            messages.add('ERROR: ' + msg.content);
-            break;
-        }
-        setTimeout(function() {
-            socket.send('ping');
-        }, 500);
-    };
+    let client = GameClient({ status, $grid });
 
   /*
    * Setup grid form.
@@ -133,28 +159,21 @@ window.onload = function() {
         const payload = JSON.stringify({ pattern: $gridField.value, settings: settings });
         const msg = 'new-grid ' + payload;
 
-        if (socket.readyState !== socket.OPEN) {
-            messages.add('Disconnected from game server.');
-            reconnect();
+        if (!client.connected()) {
+            status.add('Disconnected from game server.');
+            client.reconnect();
         }
-        socket.send(msg);
-    };
-
-    const reconnect = function(silent) {
-        if (!silent)
-            messages.add('Attempting to reconnect...');
-      // FIXME -> once WebSocket loses connection a new one must be created
-      // socket.io will fix this
-        socket.dispatchEvent(new Event('open'));
+        client.send(msg);
     };
 
   /*
    * Reconnect button
    */
     $reconnectBtn.onclick = function() {
-        if (socket.readyState === socket.OPEN)
-            messages.add('Already connected to game server.');
-        reconnect(true);
+        if (client.connected())
+            status.add('Already connected to game server.');
+        else
+            client.reconnect();
     };
 
   /*
@@ -162,10 +181,10 @@ window.onload = function() {
    */
     document.querySelectorAll('#control-panel button').forEach(function(button) {
         button.onclick = function(event) {
-            if (socket.readyState !== socket.OPEN) {
-                messages.add('Disconnected from game server.');
+            if (client.readyState !== client.OPEN) {
+                status.add('Disconnected from game server.');
             }
-            socket.send(event.target.value);
+            client.send(event.target.value);
         };
     });
 };
