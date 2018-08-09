@@ -7,15 +7,19 @@
   "private": true,
   "devDependencies": {
     "browserify": "^16.2.2",
+    "chokidar-cli": "^1.2.0",
     "watchify": "^3.11.0"
   },
   "scripts": {
     "lint": "eslint **/*.js",
-    "clean": "rm -rf dist/*",
-    "cp-static": "cp -r $(find src/* -maxdepth 0 ! -name  '*.js' | xargs) dist/",
-    "build-js": "browserify src/index.js --outfile dist/main.js",
-    "build": "npm run clean && npm run cp-static && npm run build-js",
-    "watch": "watchify src/index.js --outfile dist/main.js"
+    "clean": "rm -rf dist/* && mkdir -p dist/vendor/",
+    "ls-assets": "find src/* -maxdepth 0 ! -name  '*.js' | xargs",
+    "build-assets": "npm run clean && cp -rf $(npm run --silent ls-assets) dist/",
+    "build-js": "browserify src/index.js > dist/main.js",
+    "build": "npm run build-assets && npm run build-js",
+    "watch-assets": "chokidar $(npm run --silent ls-assets) -c 'cp -vrf {path} dist/'",
+    "watch-js": "watchify src/index.js --outfile dist/main.js",
+    "watch": "npm run watch-assets & npm run watch-js"
   },
   "main": "src/index.js"
 }
