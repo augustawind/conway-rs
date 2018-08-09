@@ -1,3 +1,4 @@
+use std::iter::FromIterator;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -14,11 +15,25 @@ pub fn listen(addr: &str) -> ws::Result<()> {
 
 #[derive(Serialize)]
 #[serde(tag = "kind", content = "content")]
-pub enum Message<T: ToString + Serialize = String> {
+pub enum Message<T> {
     Connected(T),
     Status(T),
     Grid(T),
     Error(T),
+}
+
+impl<T> Message<T> {
+    fn map<U, F>(self, f: F) -> Message<U>
+    where
+        F: FnOnce(&T) -> U,
+    {
+        match self {
+            Message::Connected(t) => Message::Connected(f(&t)),
+            Message::Status(t) => Message::Status(f(&t)),
+            Message::Grid(t) => Message::Grid(f(&t)),
+            Message::Error(t) => Message::Error(f(&t)),
+        }
+    }
 }
 
 impl<T: ToString + Serialize> Message<T> {
@@ -33,8 +48,43 @@ impl<T: ToString + Serialize> From<Message<T>> for ws::Message {
     }
 }
 
+pub struct MessageQueue(Vec<Message<String>>);
+
+impl MessageQueue {
+    fn new() -> Self {
+        MessageQueue(Vec::new())
+    }
+
+    fn push<T: ToString>(&mut self, msg: Message<T>) {
+        self.0.push(msg.map(|s| s.to_string()));
+    }
+
+    fn append<T: ToString>(&mut self, msgs: Vec<Message<T>>) {
+        self.0.append(
+            &mut msgs
+                .into_iter()
+                .map(|msg: Message<T>| msg.map(|s: &T| s.to_string()))
+                .collect(),
+        )
+    }
+
+    fn flush<B>(&mut self) -> B
+    where
+        B: FromIterator<Message<String>>,
+    {
+        FromIterator::from_iter(self.0.drain(..))
+    }
+}
+
+impl From<MessageQueue> for ws::Message {
+    fn from(mut queue: MessageQueue) -> Self {
+        ws::Message::Text(serde_json::to_string::<Vec<Message<String>>>(&queue.flush()).unwrap())
+    }
+}
+
 pub struct Server {
     out: ws::Sender,
+    queue: MessageQueue,
     game: Arc<Mutex<Game>>,
     initial_game: Game,
     paused: bool,
@@ -56,6 +106,7 @@ impl Server {
         );
         Server {
             out,
+            queue: MessageQueue::new(),
             game: Arc::new(Mutex::new(game.clone())),
             initial_game: game,
             paused: true,
