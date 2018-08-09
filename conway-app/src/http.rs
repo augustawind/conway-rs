@@ -2,7 +2,6 @@ use std::path::{Path, PathBuf};
 
 use rocket;
 use rocket::response::NamedFile;
-use rocket_contrib::Template;
 
 lazy_static! {
     static ref PATH_STATIC: &'static Path = Path::new("static/");
@@ -19,14 +18,12 @@ struct Context {
 }
 
 pub fn server() -> rocket::Rocket {
-    rocket::ignite()
-        .mount("/", routes![route_index, route_static])
-        .attach(Template::fairing())
+    rocket::ignite().mount("/", routes![route_index, route_static])
 }
 
 #[get("/", format = "text/html")]
-fn route_index() -> Template {
-    Template::render("index", *CONTEXT)
+fn route_index() -> Option<NamedFile> {
+    NamedFile::open(PATH_STATIC.join("index.html")).ok()
 }
 
 #[get("/static/<file..>")]

@@ -14,10 +14,4 @@ rocket_codegen = "0.3.*"
 serde = "1.0.*"
 serde_derive = "1.0.*"
 serde_json = "1.0.*"
-tera = "0.11"
 ws = "*"
-
-[dependencies.rocket_contrib]
-version = "0.3.*"
-default_features = false
-features = ["tera_templates"]

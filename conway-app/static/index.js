@@ -2,6 +2,24 @@
 /*
  * Constants.
  */
+const DEFAULT_PATTERN = `
+............x............
+............x............
+............x............
+xxx......................
+..x......................
+.x.......................
+.........................
+.....xxx..xxxxx..xxx.....
+.........................
+.......................x.
+......................x..
+......................xxx
+............x............
+............x............
+............x............
+`;
+
 const CHAR_ALIVE = '■';
 const CHAR_DEAD = '□';
 
@@ -20,6 +38,11 @@ window.onload = function() {
     const reconnectBtn = document.getElementById('reconnect-btn');
     const gridOutput = document.getElementById('grid-output');
     const messages = document.getElementById('messages');
+
+    /*
+     * Set default pattern
+     */
+    gridField.innerHTML = DEFAULT_PATTERN.trim();
 
     /*
      * Define utility to add message to message box.
@@ -60,7 +83,7 @@ window.onload = function() {
             addMessage(msg.content);
             break;
         case MSG_GRID:
-            gridOutput.innerHTML = msg.content
+            gridOutput.innerHTML = msg.content.trim()
                 .replace(/(\.)/g, CHAR_DEAD)
                 .replace(/(x)/g, CHAR_ALIVE);
             break;
