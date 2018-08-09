@@ -1,0 +1,12 @@
+{
+  "name": "conway-server",
+  "version": "0.1.0",
+  "description": "A browser interface to Conway's Game of Life.",
+  "author": "Dustin Rohde",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
+}

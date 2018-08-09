@@ -1,4 +1,6 @@
 /target
 **/*.rs.bk
-Session.vim
+**/Session.vim
 .tern-port
+**/node_modules/
+**/dist/main.js
