@@ -1,61 +1,73 @@
+'use strict';
 /*
  * Constants.
  */
 const CHAR_ALIVE = '■';
 const CHAR_DEAD = '□';
 
+const MSG_CONNECTED = 'Connected';
+const MSG_STATUS = 'Status';
+const MSG_GRID = 'Grid';
+const MSG_ERROR = 'Error';
+
 window.onload = function() {
     /*
      * Get elements.
      */
     const gameArea = document.getElementById('game-area');
-
     const gridForm = document.getElementById('grid-form');
     const gridField = document.getElementById('grid-field');
-
+    const reconnectBtn = document.getElementById('reconnect-btn');
     const gridOutput = document.getElementById('grid-output');
     const messages = document.getElementById('messages');
 
     /*
      * Define utility to add message to message box.
      */
+    let isOddMsg = false;
     const addMessage = function(msg) {
         const isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
 
         const elem = document.createElement('li');
-        elem.setAttribute('class', this.isOddMsg ? 'message odd' : 'message');
+        elem.setAttribute('class', isOddMsg ? 'message odd' : 'message');
         elem.textContent = msg;
         messages.appendChild(elem);
 
-        this.isOddMsg = !this.isOddMsg;
+        isOddMsg = !isOddMsg;
 
         // If the message box was already scrolled down, auto-scroll down to reveal new message.
         if (isScrolledDown)
             messages.scrollTop = messages.scrollHeight - messages.clientHeight;
     };
-    addMessage.isOddMessage = false;
 
     /*
      * Setup WebSocket.
      */
     const socket = new WebSocket('ws://localhost:3012');
-    socket.onopen = function() {
-        addMessage('Connected to game server.');
-    };
     socket.onclose = function() {
         addMessage('Disconnected from game server.');
     };
     socket.onerror = function(error) {
-        console.log('WebSocket Error: ' + error);
+        console.log('Error communicating with game server: ' + error);
     };
     socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.status !== null)
-            addMessage(data.status);
-        if (data.pattern !== null)
-            gridOutput.innerHTML = data.pattern
+        const msg = JSON.parse(event.data);
+        switch (msg.kind) {
+        case MSG_CONNECTED:
+            addMessage('Connected to game server.');
+            break;
+        case MSG_STATUS:
+            addMessage(msg.content);
+            break;
+        case MSG_GRID:
+            gridOutput.innerHTML = msg.content
                 .replace(/(\.)/g, CHAR_DEAD)
                 .replace(/(x)/g, CHAR_ALIVE);
+            break;
+        case MSG_ERROR:
+            addMessage('ERROR: ' + msg.content);
+            break;
+        }
         setTimeout(function() {
             socket.send('ping');
         }, 500);
@@ -94,6 +106,11 @@ window.onload = function() {
         // Send message.
         const payload = JSON.stringify({ pattern: gridField.value, settings: settings });
         const msg = 'new-grid ' + payload;
+
+        if (socket.readyState !== socket.OPEN) {
+            addMessage('Disconnected from game server.');
+            reconnect();
+        }
         socket.send(msg);
         return false;
     };
@@ -103,6 +120,10 @@ window.onload = function() {
      */
     document.querySelectorAll('#control-panel button').forEach(function(button) {
         button.onclick = function(event) {
+            if (socket.readyState !== socket.OPEN) {
+                addMessage('Disconnected from game server.');
+                reconnect();
+            }
             socket.send(event.target.value);
         };
     });

@@ -212,6 +212,7 @@ impl Game {
     }
 
     /// Return whether the Game is over. This happens with the Grid is empty.
+    // TODO: make this `is_stablized` and increase functionality.
     pub fn is_over(&self) -> bool {
         self.grid.is_empty()
     }

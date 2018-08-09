@@ -10,6 +10,7 @@ extern crate serde_derive;
 extern crate conway;
 extern crate rocket;
 extern crate rocket_contrib;
+extern crate serde;
 extern crate serde_json;
 extern crate ws;
 

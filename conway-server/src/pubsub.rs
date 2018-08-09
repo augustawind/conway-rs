@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use serde::Serialize;
 use serde_json;
 use ws;
 
@@ -12,39 +13,22 @@ pub fn listen(addr: &str) -> ws::Result<()> {
 }
 
 #[derive(Serialize)]
-pub struct Message<'a> {
-    status: Option<String>,
-    pattern: Option<String>,
-    #[serde(skip_serializing)]
-    out: &'a ws::Sender,
+#[serde(tag = "kind", content = "content")]
+pub enum Message<T: ToString + Serialize = String> {
+    Connected(T),
+    Status(T),
+    Grid(T),
+    Error(T),
 }
 
-impl<'a> Message<'a> {
-    fn new(out: &'a ws::Sender) -> Self {
-        Message {
-            status: None,
-            pattern: None,
-            out,
-        }
-    }
-
-    fn send(self) -> ws::Result<()> {
-        self.out.send(self)
-    }
-
-    fn status<T: ToString>(mut self, status: T) -> Self {
-        self.status = Some(status.to_string());
-        self
-    }
-
-    fn pattern<T: ToString>(mut self, pattern: T) -> Self {
-        self.pattern = Some(pattern.to_string());
-        self
+impl<T: ToString + Serialize> Message<T> {
+    fn send(self, out: &ws::Sender) -> ws::Result<()> {
+        out.send(self)
     }
 }
 
-impl<'a> From<Message<'a>> for ws::Message {
-    fn from(msg: Message) -> Self {
+impl<T: ToString + Serialize> From<Message<T>> for ws::Message {
+    fn from(msg: Message<T>) -> Self {
         ws::Message::Text(serde_json::to_string(&msg).unwrap())
     }
 }
@@ -80,22 +64,22 @@ impl Server {
 
     fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
         if game.is_over() {
-            self.message()
-                .status("Game is stable.")
-                .pattern(game.draw())
-                .send()
+            Message::Status("Grid has stabilized.").send(&self.out)
         } else {
             game.tick();
-            self.message().pattern(game.draw()).send()
+            Message::Grid(game.draw()).send(&self.out)
         }
-    }
-
-    fn message(&self) -> Message {
-        Message::new(&self.out)
     }
 }
 
 impl ws::Handler for Server {
+    fn on_open(&mut self, shake: ws::Handshake) -> ws::Result<()> {
+        if let Some(addr) = try!(shake.remote_addr()) {
+            debug!("Connection with {} now open", addr);
+        }
+        Message::Connected("Connected to game server.").send(&self.out)
+    }
+
     fn on_message(&mut self, msg: ws::Message) -> ws::Result<()> {
         debug!("Received message: {:?}", msg);
         let mut game: &mut Game = &mut self.game.lock().unwrap();
@@ -131,45 +115,33 @@ impl ws::Handler for Server {
             Some("scroll") => {
                 let Point(dx, dy): Point = match args.next().unwrap_or_default().parse::<Point>() {
                     Ok(delta) => delta,
-                    Err(err) => return self.out.send(format!("WARNING: {}", err)),
+                    Err(err) => return Message::Error(err.to_string()).send(&self.out),
                 };
                 game.scroll(dx, dy);
-                self.message().pattern(game.draw()).send()
+                Message::Grid(game.draw()).send(&self.out)
             }
             Some("center") => {
                 game.center_viewport();
-                self.message()
-                    .status("Viewport centered on cell activity.")
-                    .pattern(game.draw())
-                    .send()
+                Message::Grid(game.draw()).send(&self.out)
             }
             Some("new-grid") => {
                 let data = args.next().unwrap_or_default();
 
                 *game = match GameConfig::from_json(data).and_then(|config| config.build()) {
                     Ok(game) => game,
-                    Err(err) => {
-                        return self.message().status(err.to_string_chain()).send();
-                    }
+                    Err(err) => return Message::Error(err.to_string_chain()).send(&self.out),
                 };
                 self.initial_game = game.clone();
-                self.message()
-                    .status("Started new game.")
-                    .pattern(game.draw())
-                    .send()
+                Message::Grid(game.draw()).send(&self.out)
             }
             Some("restart") => {
                 *game = self.initial_game.clone();
-                self.message()
-                    .status("Restarted game.")
-                    .pattern(game.draw())
-                    .send()
+                Message::Grid(game.draw()).send(&self.out)
             }
-            Some(arg) => self.out.send(format!(
-                "WARNING: message contained unexpected command '{}'",
-                arg
-            )),
-            None => self.out.send("WARNING: empty message received"),
+            Some(arg) => {
+                Message::Error(format!("received unexpected command '{}'", arg)).send(&self.out)
+            }
+            None => Message::Error("received empty message").send(&self.out),
         }
     }
 }
