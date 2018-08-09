@@ -62,17 +62,32 @@ impl Viewport {
     }
 }
 
-pub struct GameIter<'a>(&'a mut Game);
+pub struct GameIter<'a> {
+    game: &'a mut Game,
+    with_delay: bool,
+}
+
+impl<'a> GameIter<'a> {
+    pub fn with_delay(mut self, with_delay: bool) -> Self {
+        self.with_delay = with_delay;
+        self
+    }
+}
 
 impl<'a> Iterator for GameIter<'a> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.0.is_over() {
-            return None;
+        if self.game.is_over() {
+            None
+        } else {
+            if self.with_delay {
+                self.game.tick_with_delay();
+            } else {
+                self.game.tick();
+            }
+            Some(self.game.draw())
         }
-        self.0.tick_with_delay();
-        Some(self.0.draw())
     }
 }
 
@@ -109,12 +124,30 @@ impl Game {
         game
     }
 
-    pub fn reset_grid(&mut self, grid: Grid) {
-        self.grid = grid;
+    pub fn iter(&mut self) -> GameIter {
+        GameIter {
+            game: self,
+            with_delay: false,
+        }
     }
 
-    pub fn iter(&mut self) -> GameIter {
-        GameIter(self)
+    /// Execute the next turn in the Game of Life.
+    ///
+    /// `tick` applies the rules of game to each individual Point, killing some and reviving others.
+    pub fn tick(&mut self) {
+        for cell in self.grid.active_cells() {
+            if self.survives(&cell) {
+                self.swap.set_alive(cell);
+            }
+        }
+        self.grid.clear();
+        mem::swap(&mut self.grid, &mut self.swap);
+    }
+
+    /// Call `tick`, then sleep for `self.opts.delay`.
+    pub fn tick_with_delay(&mut self) {
+        thread::sleep(self.opts.delay);
+        self.tick();
     }
 
     pub fn draw(&self) -> String {
@@ -183,25 +216,6 @@ impl Game {
         self.grid.is_empty()
     }
 
-    /// Execute the next turn in the Game of Life.
-    ///
-    /// `tick` applies the rules of game to each individual Point, killing some and reviving others.
-    pub fn tick(&mut self) {
-        for cell in self.grid.active_cells() {
-            if self.survives(&cell) {
-                self.swap.set_alive(cell);
-            }
-        }
-        self.grid.clear();
-        mem::swap(&mut self.grid, &mut self.swap);
-    }
-
-    /// Call `tick`, then sleep for `self.opts.delay`.
-    pub fn tick_with_delay(&mut self) {
-        self.tick();
-        thread::sleep(self.opts.delay);
-    }
-
     /// Survives returns whether the cell at the given Point survives an application of The Rules.
     pub fn survives(&self, cell: &Point) -> bool {
         let live_neighbors = self.grid.live_neighbors(cell);
@@ -216,6 +230,10 @@ impl Game {
                 _ => false,
             }
         }
+    }
+
+    pub fn reset_grid(&mut self, grid: Grid) {
+        self.grid = grid;
     }
 }
 

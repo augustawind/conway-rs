@@ -43,6 +43,7 @@ where
                 +takes_value
                 "load a pattern from a file")
             (@arg sample: -S --sample display_order(1)
+                +takes_value
                 possible_values(SAMPLE_CHOICES.as_ref())
                 "load a sample pattern")
         )

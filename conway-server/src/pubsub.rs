@@ -78,7 +78,7 @@ impl Server {
         self.out.send(Message::new().status(msg))
     }
 
-    fn next_turn(&self, game: &mut Game, delay: bool) -> ws::Result<()> {
+    fn next_turn(&self, game: &mut Game, with_delay: bool) -> ws::Result<()> {
         if game.is_over() {
             self.out.send(
                 Message::new()
@@ -86,7 +86,7 @@ impl Server {
                     .pattern(game.draw()),
             )
         } else {
-            if delay {
+            if with_delay {
                 game.tick_with_delay();
             } else {
                 game.tick();

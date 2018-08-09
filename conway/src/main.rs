@@ -16,7 +16,7 @@ fn main() {
 fn run() -> Result<()> {
     let mut game = GameConfig::from_argv()?.build()?;
     let mut stdout = io::stdout();
-    for frame in game.iter() {
+    for frame in game.iter().with_delay(true) {
         write!(stdout, "\n{}", frame)?;
         stdout.flush()?;
     }
