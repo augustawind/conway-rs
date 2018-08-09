@@ -1,24 +1,11 @@
-// Grid defaults.
+// Constants.
 var CHAR_ALIVE = '■';
 var CHAR_DEAD = '□';
 
 window.onload = function() {
-    var isOddMsg = false;
-    var addMessage = function(msg) {
-        var isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
-
-        var elem = document.createElement('li');
-        elem.setAttribute('class', isOddMsg ? 'message odd' : 'message');
-        elem.textContent = msg;
-        messages.appendChild(elem);
-
-        isOddMsg = !isOddMsg;
-
-        // If the message box was already scrolled down, auto-scroll down to reveal new message.
-        if (isScrolledDown)
-            messages.scrollTop = messages.scrollHeight - messages.clientHeight;
-    };
-
+    /*
+     * Get elements.
+     */
     var gameArea = document.getElementById('game-area');
 
     var gridForm = document.getElementById('grid-form');
@@ -27,6 +14,28 @@ window.onload = function() {
     var gridOutput = document.getElementById('grid-output');
     var messages = document.getElementById('messages');
 
+    /*
+     * Define utility to add message to message box.
+     */
+    var addMessage = function(msg) {
+        var isScrolledDown = messages.scrollHeight - messages.clientHeight <= messages.scrollTop;
+
+        var elem = document.createElement('li');
+        elem.setAttribute('class', this.isOddMsg ? 'message odd' : 'message');
+        elem.textContent = msg;
+        messages.appendChild(elem);
+
+        this.isOddMsg = !this.isOddMsg;
+
+        // If the message box was already scrolled down, auto-scroll down to reveal new message.
+        if (isScrolledDown)
+            messages.scrollTop = messages.scrollHeight - messages.clientHeight;
+    };
+    addMessage.isOddMessage = false;
+
+    /*
+     * Setup WebSocket.
+     */
     var socket = new WebSocket('ws://localhost:3012');
     socket.onopen = function() {
         addMessage('Connected to game server.');
@@ -38,7 +47,6 @@ window.onload = function() {
     socket.onerror = function(error) {
         console.log('WebSocket Error: ' + error);
     };
-
     socket.onmessage = function(event) {
         var data = JSON.parse(event.data);
         if (data.status !== null)
@@ -52,6 +60,9 @@ window.onload = function() {
         }, 500);
     };
 
+    /*
+     * Setup grid form.
+     */
     gridForm.onsubmit = function(event) {
         event.preventDefault();
         gameArea.scrollIntoView({
@@ -72,9 +83,9 @@ window.onload = function() {
 
         // Fetch `delay` from form and turn it into Duration json repr. for the backend.
         var delay_ms = fields['tick-delay'].value;
-        var secs = Math.trunc(delay_ms / 1000);
-        var nanos = (delay_ms - (secs * 1000)) * 1000000;
-        settings.delay = { secs: secs, nanos: nanos };
+        var delay_secs = Math.trunc(delay_ms / 1000);
+        var delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
+        settings.delay = { secs: delay_secs, nanos: delay_nanos };
 
         // Fetch `view` from form.
         settings.view = fields['view'].value;
@@ -86,6 +97,9 @@ window.onload = function() {
         return false;
     };
 
+    /*
+     * Setup control panel.
+     */
     document.querySelectorAll('#control-panel button').forEach(function(button) {
         button.onclick = function(event) {
             socket.send(event.target.value);

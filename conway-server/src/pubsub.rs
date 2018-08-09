@@ -78,7 +78,7 @@ impl Server {
         self.out.send(Message::new().status(msg))
     }
 
-    fn next_turn(&self, game: &mut Game, with_delay: bool) -> ws::Result<()> {
+    fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
         if game.is_over() {
             self.out.send(
                 Message::new()
@@ -86,11 +86,7 @@ impl Server {
                     .pattern(game.draw()),
             )
         } else {
-            if with_delay {
-                game.tick_with_delay();
-            } else {
-                game.tick();
-            }
+            game.tick();
             self.out.send(Message::new().pattern(game.draw()))
         }
     }
@@ -111,11 +107,11 @@ impl ws::Handler for Server {
                 if self.paused {
                     return Ok(());
                 }
-                self.next_turn(&mut game, true)
+                self.next_turn(&mut game)
             }
             Some("step") => {
                 if self.paused {
-                    self.next_turn(&mut game, false)
+                    self.next_turn(&mut game)
                 } else {
                     self.paused = true;
                     Ok(())
@@ -125,7 +121,7 @@ impl ws::Handler for Server {
                 let was_paused = self.paused;
                 self.paused = false;
                 if was_paused {
-                    return self.next_turn(&mut game, false);
+                    return self.next_turn(&mut game);
                 }
                 Ok(())
             }
