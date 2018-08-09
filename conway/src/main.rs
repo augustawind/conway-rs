@@ -7,7 +7,7 @@ use conway::{GameConfig, Result};
 
 fn main() {
     if let Err(ref e) = run() {
-        let stderr = &mut ::std::io::stderr();
+        let stderr = &mut io::stderr();
         e.write_err_chain(stderr);
         ::std::process::exit(1);
     }
