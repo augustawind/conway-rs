@@ -94,26 +94,33 @@ function GameClient(spec) {
             console.log('Error communicating with game server: ' + error);
         },
         onmessage(event) {
-            const msg = JSON.parse(event.data);
-            switch (msg.kind) {
-            case MSG_CONNECTED:
-                status.add('Connected to game server.');
-                break;
-            case MSG_STATUS:
-                status.add(msg.content);
-                break;
-            case MSG_GRID:
-                $grid.innerHTML = msg.content.trim()
-                    .replace(/(\.)/g, CHAR_DEAD)
-                    .replace(/(x)/g, CHAR_ALIVE);
-                break;
-            case MSG_ERROR:
-                status.add('ERROR: ' + msg.content);
-                break;
-            }
+            let then = Date.now(),
+                delay_ms = 500,
+                messages = JSON.parse(event.data);
+
+            messages.forEach(function(msg) {
+                switch (msg.kind) {
+                case MSG_CONNECTED:
+                    status.add('Connected to game server.');
+                    break;
+                case MSG_STATUS:
+                    status.add(msg.content);
+                    break;
+                case MSG_GRID:
+                    $grid.innerHTML = msg.content.trim()
+                        .replace(/(\.)/g, CHAR_DEAD)
+                        .replace(/(x)/g, CHAR_ALIVE);
+                    break;
+                case MSG_ERROR:
+                    status.add('ERROR: ' + msg.content);
+                    break;
+                }
+            });
+
+            delay_ms -= (Date.now() - then);
             setTimeout(function() {
                 send(CMD_MAP.ping());
-            }, 500);
+            }, delay_ms);
         }
     });
 

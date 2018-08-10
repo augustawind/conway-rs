@@ -1,4 +1,5 @@
 use std::iter::FromIterator;
+use std::ops::{Add, AddAssign};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -7,7 +8,7 @@ use serde_json;
 use ws;
 
 use conway::config::Settings;
-use conway::{Game, GameConfig, Point, View};
+use conway::{Game, GameConfig, View};
 
 pub fn listen(addr: &str) -> ws::Result<()> {
     ws::listen(addr, Server::new)
@@ -25,7 +26,7 @@ pub enum Cmd {
     Restart,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(tag = "kind", content = "content")]
 pub enum Message<T> {
     Connected(T),
@@ -48,18 +49,24 @@ impl<T> Message<T> {
     }
 }
 
-impl<T: ToString + Serialize> Message<T> {
-    fn send(self, out: &ws::Sender) -> ws::Result<()> {
-        out.send(self)
-    }
-}
-
 impl<T: ToString + Serialize> From<Message<T>> for ws::Message {
     fn from(msg: Message<T>) -> Self {
         ws::Message::Text(serde_json::to_string(&msg).unwrap())
     }
 }
 
+impl<T: ToString> Add for Message<T> {
+    type Output = MessageQueue;
+
+    fn add(self, msg: Message<T>) -> MessageQueue {
+        let mut queue = MessageQueue::new();
+        queue.push(self);
+        queue.push(msg);
+        queue
+    }
+}
+
+#[derive(Debug)]
 pub struct MessageQueue(Vec<Message<String>>);
 
 impl MessageQueue {
@@ -80,24 +87,46 @@ impl MessageQueue {
         )
     }
 
-    fn flush<B>(&mut self) -> B
+    fn drain<B>(&mut self) -> B
     where
         B: FromIterator<Message<String>>,
     {
         FromIterator::from_iter(self.0.drain(..))
     }
+
+    fn flush(&mut self, out: &ws::Sender) -> ws::Result<()> {
+        out.send(serde_json::to_string::<Vec<Message<String>>>(&self.drain()).unwrap())
+    }
 }
 
-impl From<MessageQueue> for ws::Message {
-    fn from(mut queue: MessageQueue) -> Self {
-        ws::Message::Text(serde_json::to_string::<Vec<Message<String>>>(&queue.flush()).unwrap())
+impl<'a> From<&'a MessageQueue> for ws::Message {
+    fn from(&MessageQueue(ref msgs): &MessageQueue) -> Self {
+        ws::Message::Text(serde_json::to_string(&msgs).unwrap())
     }
+}
+
+impl<T: ToString> Add<Message<T>> for MessageQueue {
+    type Output = Self;
+    fn add(mut self, msg: Message<T>) -> MessageQueue {
+        self.push(msg);
+        self
+    }
+}
+
+impl<T: ToString> AddAssign<Message<T>> for MessageQueue {
+    fn add_assign(&mut self, msg: Message<T>) {
+        self.push(msg);
+    }
+}
+
+struct State {
+    game: Game,
+    queue: MessageQueue,
 }
 
 pub struct Server {
     out: ws::Sender,
-    queue: MessageQueue,
-    game: Arc<Mutex<Game>>,
+    state: Arc<Mutex<State>>,
     initial_game: Game,
     paused: bool,
 }
@@ -118,20 +147,21 @@ impl Server {
         );
         Server {
             out,
-            queue: MessageQueue::new(),
-            game: Arc::new(Mutex::new(game.clone())),
+            state: Arc::new(Mutex::new(State {
+                queue: MessageQueue::new(),
+                game: game.clone(),
+            })),
             initial_game: game,
             paused: true,
         }
     }
 
-    fn next_turn(&self, game: &mut Game) -> ws::Result<()> {
+    fn next_turn(&self, game: &mut Game, queue: &mut MessageQueue) {
         if game.is_over() {
-            Message::Status("Grid has stabilized.").send(&self.out)
-        } else {
-            game.tick();
-            Message::Grid(game.draw()).send(&self.out)
+            queue.push(Message::Status("Grid has stabilized."));
         }
+        game.tick();
+        queue.push(Message::Grid(game.draw()));
     }
 }
 
@@ -140,61 +170,65 @@ impl ws::Handler for Server {
         if let Some(addr) = try!(shake.remote_addr()) {
             debug!("Connection with {} now open", addr);
         }
-        Message::Connected("Connected to game server.").send(&self.out)
+        let &mut State { ref mut queue, .. }: &mut State = &mut *self.state.lock().unwrap();
+        queue.push(Message::Connected("Connected to game server."));
+        queue.flush(&self.out)
     }
 
     fn on_message(&mut self, msg: ws::Message) -> ws::Result<()> {
         debug!("Received message: {:?}", msg);
-        let mut game: &mut Game = &mut self.game.lock().unwrap();
+        let &mut State {
+            ref mut game,
+            ref mut queue,
+        }: &mut State = &mut *self.state.lock().unwrap();
 
         match serde_json::from_str(msg.as_text()?) {
             Ok(Cmd::Ping) => {
-                if self.paused {
-                    return Ok(());
+                if !self.paused {
+                    self.next_turn(game, queue);
                 }
-                self.next_turn(&mut game)
             }
             Ok(Cmd::Step) => {
                 if self.paused {
-                    self.next_turn(&mut game)
+                    self.next_turn(game, queue);
                 } else {
                     self.paused = true;
-                    Ok(())
                 }
             }
             Ok(Cmd::Play) => {
-                let was_paused = self.paused;
-                self.paused = false;
-                if was_paused {
-                    return self.next_turn(&mut game);
+                if self.paused {
+                    self.paused = false;
+                    self.next_turn(game, queue);
                 }
-                Ok(())
             }
             Ok(Cmd::Pause) => {
                 self.paused = true;
-                Ok(())
             }
             Ok(Cmd::Scroll(dx, dy)) => {
                 game.scroll(dx, dy);
-                Message::Grid(game.draw()).send(&self.out)
+                queue.push(Message::Grid(game.draw()));
             }
             Ok(Cmd::Center) => {
                 game.center_viewport();
-                Message::Grid(game.draw()).send(&self.out)
+                queue.push(Message::Grid(game.draw()));
             }
             Ok(Cmd::NewGrid(config)) => {
-                *game = match config.build() {
-                    Ok(game) => game,
-                    Err(err) => return Message::Error(err.to_string_chain()).send(&self.out),
+                match config.build() {
+                    Ok(new_game) => *game = new_game,
+                    Err(err) => queue.push(Message::Error(err.to_string_chain())),
                 };
                 self.initial_game = game.clone();
-                Message::Grid(game.draw()).send(&self.out)
+                queue.push(Message::Status("Started a new game."));
+                queue.push(Message::Grid(game.draw()));
             }
             Ok(Cmd::Restart) => {
                 *game = self.initial_game.clone();
-                Message::Grid(game.draw()).send(&self.out)
+                queue.push(Message::Status("Restarted the current game."));
+                queue.push(Message::Grid(game.draw()));
             }
-            Err(err) => Message::Error(format!("ERROR: invalid input: {}", err)).send(&self.out),
-        }
+            Err(err) => queue.push(Message::Error(format!("ERROR: invalid input: {}", err))),
+        };
+
+        queue.flush(&self.out)
     }
 }
