@@ -52,16 +52,6 @@ pub struct Viewport {
     height: u64,
 }
 
-impl Viewport {
-    pub fn new(width: u64, height: u64) -> Self {
-        Viewport {
-            width,
-            height,
-            ..Default::default()
-        }
-    }
-}
-
 pub struct GameIter<'a> {
     game: &'a mut Game,
     with_delay: bool,
@@ -111,7 +101,7 @@ impl Game {
             origin,
             width: opts.width.unwrap_or((x1 - origin.0 + 1) as u64),
             height: opts.height.unwrap_or((y1 - origin.1 + 1) as u64),
-            scroll: Point(0, 0),
+            scroll: Point::origin(),
         };
 
         let mut game = Game {
@@ -171,6 +161,10 @@ impl Game {
 
     pub fn scroll(&mut self, dx: i64, dy: i64) {
         self.viewport.scroll += Point(dx, dy);
+    }
+
+    pub fn scroll_to(&mut self, point: Point) {
+        self.viewport.scroll = point;
     }
 
     pub fn center_viewport(&mut self) {
@@ -263,7 +257,7 @@ mod test {
     // Viewport width/height should be taken from Settings if given.
     #[test]
     fn test_size_provided() {
-        let game = mk_game(vec![Point(0, 0), Point(5, 5)], (Some(8), Some(8)));
+        let game = mk_game(vec![Point::origin(), Point(5, 5)], (Some(8), Some(8)));
         assert_eq!(game.viewport.width, 8);
         assert_eq!(game.viewport.height, 8);
     }
@@ -271,7 +265,7 @@ mod test {
     // Viewport width/height should be derived from the Grid if not given in Settings.
     #[test]
     fn test_size_auto() {
-        let game = mk_game(vec![Point(0, 0), Point(5, 5)], (None, None));
+        let game = mk_game(vec![Point::origin(), Point(5, 5)], (None, None));
         assert_eq!(game.viewport.width, 6);
         assert_eq!(game.viewport.height, 6);
     }
@@ -309,11 +303,13 @@ mod test {
         // Test `Game.viewport_fixed`.
         #[test]
         fn test_viewport_fixed_1() {
+            let mut game = mk_game(
+                vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
+                (Some(7), Some(7)),
+            );
+            game.scroll_to(Point::origin());
             assert_eq!(
-                mk_game(
-                    vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
-                    (Some(7), Some(7)),
-                ).viewport_fixed(),
+                game.viewport_fixed(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
             );
@@ -322,25 +318,23 @@ mod test {
         // ...
         #[test]
         fn test_viewport_fixed_2() {
-            assert_eq!(
-                mk_game(
-                    vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
-                    (Some(88), Some(12))
-                ).viewport_fixed(),
-                (Point(-12, 1), Point(75, 12))
+            let mut game = mk_game(
+                vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
+                (Some(88), Some(12)),
             );
+            game.scroll_to(Point::origin());
+            assert_eq!(game.viewport_fixed(), (Point(-12, 1), Point(75, 12)));
         }
 
         // ...
         #[test]
         fn test_viewport_fixed_3() {
-            assert_eq!(
-                mk_game(
-                    vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
-                    (Some(10), Some(3))
-                ).viewport_fixed(),
-                (Point(2, 2), Point(11, 4)),
+            let mut game = mk_game(
+                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                (Some(10), Some(3)),
             );
+            game.scroll_to(Point::origin());
+            assert_eq!(game.viewport_fixed(), (Point(2, 2), Point(11, 4)),);
         }
 
         // Test that `Game.viewport_fixed` adjusts for scroll.
@@ -350,6 +344,7 @@ mod test {
                 vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
                 (Some(10), Some(3)),
             );
+            game.scroll_to(Point::origin());
             game.scroll(1, -5);
             assert_eq!(game.viewport_fixed(), (Point(3, -3), Point(12, -1)));
         }

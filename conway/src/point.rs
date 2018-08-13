@@ -9,6 +9,12 @@ use {Error, ErrorKind, Result};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point(pub i64, pub i64);
 
+impl Point {
+    pub fn origin() -> Point {
+        Point(0, 0)
+    }
+}
+
 impl ops::Add for Point {
     type Output = Self;
 
@@ -41,7 +47,7 @@ impl ops::SubAssign for Point {
 
 impl Default for Point {
     fn default() -> Self {
-        Point(0, 0)
+        Point::origin()
     }
 }
 
