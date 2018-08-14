@@ -227,11 +227,16 @@ window.onload = function() {
             client.send(cmd);
         };
     });
+    document.addEventListener('keydown', function(event) {
+        if (event.key === ' ')
+            event.preventDefault();
+    });
     document.addEventListener('keyup', function(event) {
         const handleKey = KEYBOARD_SHORTCUTS[event.key];
         if (handleKey) {
             event.preventDefault();
-            handleKey(client);
+            if (client.connected())
+                handleKey(client);
         }
     });
 };
