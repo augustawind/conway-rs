@@ -113,7 +113,7 @@ impl<'a> Iterator for GameIter<'a> {
 pub struct Game {
     grid: Grid,
     swap: Grid,
-    opts: Settings,
+    pub opts: Settings,
     pub viewport: Viewport,
 }
 

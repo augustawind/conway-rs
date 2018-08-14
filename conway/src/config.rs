@@ -76,7 +76,6 @@ where
 pub struct Settings {
     pub delay: Duration,
     pub view: View,
-
     pub char_alive: char,
     pub char_dead: char,
 }
