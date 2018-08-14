@@ -400,9 +400,9 @@ mod test {
             );
         }
 
-        // Test that `Viewport_centered` ignores current scroll.
+        // Test that `Viewport.centered` ignores current scroll.
         #[test]
-        fn test_viewport_centered_with_scroll() {
+        fn test_centered_with_scroll() {
             assert_eq!(
                 Viewport {
                     origin: Point(2, 2),
