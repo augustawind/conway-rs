@@ -20,6 +20,7 @@ pub enum Cmd {
     Step,
     Play,
     Pause,
+    Toggle,
     Scroll(i64, i64),
     Center,
     NewGrid(GameConfig),
@@ -202,6 +203,12 @@ impl ws::Handler for Server {
             }
             Ok(Cmd::Pause) => {
                 self.paused = true;
+            }
+            Ok(Cmd::Toggle) => {
+                if self.paused {
+                    self.next_turn(game, queue);
+                }
+                self.paused = !self.paused;
             }
             Ok(Cmd::Scroll(dx, dy)) => {
                 game.viewport.scroll(dx, dy);

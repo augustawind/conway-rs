@@ -23,11 +23,11 @@ xxx......................
 ............x............
 `;
 
-const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = Object.freeze({
     char_alive: '■',
     char_dead: '□',
     view: 'fixed'
-};
+});
 
 const MSG_CONNECTED = 'Connected';
 const MSG_STATUS = 'Status';
@@ -45,10 +45,15 @@ const CMD_MAP = Object.freeze({
     step: CMD('Step'),
     play: CMD('Play'),
     pause: CMD('Pause'),
+    toggle: CMD('Toggle'),
     scroll: CMD('Scroll', (dx, dy) => [parseInt(dx), parseInt(dy)]),
     center: CMD('Center'),
     newGrid: CMD('NewGrid', (grid) => grid),
     restart: CMD('Restart')
+});
+
+const KEYBOARD_SHORTCUTS = Object.freeze({
+    ' ': (client) => client.send(CMD_MAP.toggle()),
 });
 
 function StatusBox() {
@@ -113,7 +118,7 @@ function GameClient(spec) {
                     $grid.innerHTML = msg.content.trim();
                     break;
                 case MSG_ERROR:
-                    status.add('ERROR: ' + msg.content);
+                    status.add('Error: ' + msg.content);
                     break;
                 }
             });
@@ -221,5 +226,12 @@ window.onload = function() {
 
             client.send(cmd);
         };
+    });
+    document.addEventListener('keyup', function(event) {
+        const handleKey = KEYBOARD_SHORTCUTS[event.key];
+        if (handleKey) {
+            event.preventDefault();
+            handleKey(client);
+        }
     });
 };
