@@ -187,7 +187,7 @@ impl Game {
     }
 
     pub fn center_viewport(&mut self) {
-        let (origin, _) = self.viewport_centered();
+        let (origin, _) = self.viewport.centered(self.grid.midpoint());
         let Point(x, y) = origin - self.viewport.origin;
         self.viewport.scroll = Point(x, y);
     }
@@ -195,13 +195,9 @@ impl Game {
     pub fn viewport(&self) -> (Point, Point) {
         match &self.opts.view {
             View::Fixed => self.viewport.fixed(),
-            View::Centered => self.viewport_centered(),
+            View::Centered => self.viewport.centered(self.grid.midpoint()),
             _ => unimplemented!(),
         }
-    }
-
-    pub fn viewport_centered(&self) -> (Point, Point) {
-        self.viewport.centered(self.grid.midpoint())
     }
 
     /// Return whether the Game is over. This happens with the Grid is empty.
@@ -428,7 +424,7 @@ mod test {
                 vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
                 (Some(10), Some(3)),
             );
-            let expected = game.viewport_centered();
+            let expected = game.viewport.centered(game.grid.midpoint());
             game.center_viewport();
             assert_eq!(game.viewport.fixed(), expected);
         }
@@ -441,7 +437,7 @@ mod test {
                 (Some(10), Some(3)),
             );
             game.scroll(-1, 2);
-            let expected = game.viewport_centered();
+            let expected = game.viewport.centered(game.grid.midpoint());
             game.center_viewport();
             assert_eq!(game.viewport.fixed(), expected);
         }
