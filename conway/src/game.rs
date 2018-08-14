@@ -95,7 +95,7 @@ impl Game {
         let mut swap = grid.clone();
         swap.clear();
 
-        let (origin, Point(x1, y1)) = grid.calculate_bounds();
+        let (origin, Point(x1, y1)) = grid.get_bounds();
 
         let viewport = Viewport {
             origin,
@@ -193,7 +193,7 @@ impl Game {
 
     /// Return a Viewport centered around existing live Cells.
     pub fn viewport_centered(&self) -> (Point, Point) {
-        let (Point(x0, y0), Point(x1, y1)) = self.grid.calculate_bounds();
+        let (Point(x0, y0), Point(x1, y1)) = self.grid.get_bounds();
         let (width, height) = (x1 - x0 + 1, y1 - y0 + 1);
 
         let (dx, dy) = (
