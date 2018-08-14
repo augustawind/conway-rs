@@ -23,8 +23,11 @@ xxx......................
 ............x............
 `;
 
-const CHAR_ALIVE = '■';
-const CHAR_DEAD = '□';
+const DEFAULT_SETTINGS = {
+    char_alive: '■',
+    char_dead: '□',
+    view: 'fixed'
+};
 
 const MSG_CONNECTED = 'Connected';
 const MSG_STATUS = 'Status';
@@ -94,9 +97,7 @@ function GameClient(spec) {
             console.log('Error communicating with game server: ' + error);
         },
         onmessage(event) {
-            let then = Date.now(),
-                delay_ms = 500,
-                messages = JSON.parse(event.data);
+            let messages = JSON.parse(event.data);
 
             messages.forEach(function(msg) {
                 switch (msg.kind) {
@@ -107,9 +108,7 @@ function GameClient(spec) {
                     status.add(msg.content);
                     break;
                 case MSG_GRID:
-                    $grid.innerHTML = msg.content.trim()
-                        .replace(/(\.)/g, CHAR_DEAD)
-                        .replace(/(x)/g, CHAR_ALIVE);
+                    $grid.innerHTML = msg.content.trim();
                     break;
                 case MSG_ERROR:
                     status.add('ERROR: ' + msg.content);
@@ -117,10 +116,7 @@ function GameClient(spec) {
                 }
             });
 
-            delay_ms -= (Date.now() - then);
-            setTimeout(function() {
-                send(CMD_MAP.ping());
-            }, delay_ms);
+            send(CMD_MAP.ping());
         }
     });
 
@@ -166,24 +162,24 @@ window.onload = function() {
         });
 
         // Build the Settings object.
-        // Use hardcoded values for `char_alive` and `char_dead`.
-        const settings = { char_alive: CHAR_ALIVE, char_dead: CHAR_DEAD };
-
         const fields = event.target.elements;
 
         // Fetch `delay` from form and turn it into Duration json repr. for the backend.
         const delay_ms = fields['tick-delay'].value;
         const delay_secs = Math.trunc(delay_ms / 1000);
         const delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
-        settings.delay = { secs: delay_secs, nanos: delay_nanos };
-
-        // Fetch `view` from form.
-        settings.view = fields['view'].value;
 
         // Compute width and height to fit containing element.
         const fontSize = parseFloat(getComputedStyle($grid).getPropertyValue('font-size'));
         const width = Math.ceil($grid.clientWidth / (fontSize * 0.61));
         const height = Math.ceil($grid.clientHeight / (fontSize * 0.51));
+
+        const settings = Object.assign({
+            delay: {
+                secs: delay_secs,
+                nanos: delay_nanos
+            }
+        }, DEFAULT_SETTINGS);
 
         // Send message.
         const payload = {

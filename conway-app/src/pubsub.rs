@@ -225,7 +225,7 @@ impl ws::Handler for Server {
                 queue.push(Message::Status("Restarted the current game."));
                 queue.push(Message::Grid(game.draw()));
             }
-            Err(err) => queue.push(Message::Error(format!("ERROR: invalid input: {}", err))),
+            Err(err) => queue.push(Message::Error(format!("invalid input: {}", err))),
         };
 
         queue.flush(&self.out)

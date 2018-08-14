@@ -93,6 +93,7 @@ impl Default for Settings {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameConfig {
+    #[serde(default)]
     pub settings: Settings,
     pub pattern: String,
     pub bounds: (Option<u64>, Option<u64>),
