@@ -301,14 +301,14 @@ mod test {
 
         // Test `Viewport.fixed`.
         #[test]
-        fn test_viewport_fixed_1() {
-            let mut game = mk_game(
-                vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
-                (Some(7), Some(7)),
-            );
-            game.scroll_to(Point::origin());
+        fn test_fixed_1() {
             assert_eq!(
-                game.viewport.fixed(),
+                Viewport {
+                    origin: Point(-3, 0),
+                    width: 7,
+                    height: 7,
+                    scroll: Point::origin(),
+                }.fixed(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
             );
@@ -316,46 +316,56 @@ mod test {
 
         // ...
         #[test]
-        fn test_viewport_fixed_2() {
-            let mut game = mk_game(
-                vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
-                (Some(88), Some(12)),
+        fn test_fixed_2() {
+            assert_eq!(
+                Viewport {
+                    origin: Point(-12, 1),
+                    width: 88,
+                    height: 12,
+                    scroll: Point::origin(),
+                }.fixed(),
+                (Point(-12, 1), Point(75, 12))
             );
-            game.scroll_to(Point::origin());
-            assert_eq!(game.viewport.fixed(), (Point(-12, 1), Point(75, 12)));
         }
 
         // ...
         #[test]
-        fn test_viewport_fixed_3() {
-            let mut game = mk_game(
-                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
-                (Some(10), Some(3)),
+        fn test_fixed_3() {
+            assert_eq!(
+                Viewport {
+                    origin: Point(2, 2),
+                    width: 10,
+                    height: 3,
+                    scroll: Point::origin(),
+                }.fixed(),
+                (Point(2, 2), Point(11, 4)),
             );
-            game.scroll_to(Point::origin());
-            assert_eq!(game.viewport.fixed(), (Point(2, 2), Point(11, 4)),);
         }
 
         // Test that `Viewport.fixed` adjusts for scroll.
         #[test]
         fn test_viewport_fixed_with_scroll() {
-            let mut game = mk_game(
-                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
-                (Some(10), Some(3)),
+            assert_eq!(
+                Viewport {
+                    origin: Point(2, 2),
+                    width: 10,
+                    height: 3,
+                    scroll: Point(1, -5),
+                }.fixed(),
+                (Point(3, -3), Point(12, -1))
             );
-            game.scroll_to(Point::origin());
-            game.scroll(1, -5);
-            assert_eq!(game.viewport.fixed(), (Point(3, -3), Point(12, -1)));
         }
 
-        // Test `Game.viewport_centered`.
+        // Test `Viewport.centered`.
         #[test]
-        fn test_viewport_centered_1() {
+        fn test_centered_1() {
             assert_eq!(
-                mk_game(
-                    vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],
-                    (Some(7), Some(7)),
-                ).viewport_centered(),
+                Viewport {
+                    origin: Point(-3, 0),
+                    width: 7,
+                    height: 7,
+                    scroll: Point::origin(),
+                }.centered(Point(0, 1)),
                 (Point(-3, -2), Point(3, 4)),
                 "should expand to fit width/height"
             );
@@ -363,17 +373,14 @@ mod test {
 
         // ...
         #[test]
-        fn test_viewport_centered_2() {
+        fn test_centered_2() {
             assert_eq!(
-                mk_game(
-                    // natural size = 66 x 33
-                    vec![Point(53, 4), Point(2, 1), Point(-12, 33)],
-                    // adjust width: 88 - 66 = +22 / 2 => x0 - 11, x1 + 11
-                    // adjust height: 12 - 33 = -21 / 2 => y0 + 10, y1 - 11
-                    (Some(88), Some(12))
-                ).viewport_centered(),
-                // x0[-12] - 11 = -23 // x1[53] + 11 = 64
-                // y0[1] + 10 = 11 // y1[33] - 11 = 22
+                Viewport {
+                    origin: Point(-12, 1),
+                    width: 88,
+                    height: 12,
+                    scroll: Point::origin(),
+                }.centered(Point(21, 17)),
                 (Point(-23, 11), Point(64, 22)),
                 "should narrow to fit width/height"
             );
@@ -381,28 +388,30 @@ mod test {
 
         // ...
         #[test]
-        fn test_viewport_centered_3() {
+        fn test_centered_3() {
             assert_eq!(
-                mk_game(
-                    // natural size = 4 x 3
-                    vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
-                    (Some(10), Some(3)),
-                ).viewport_centered(),
-                // x0[2] - 3 = -1 // x1[5] + 3 = 8
-                // y0[2] + 0 = 2 // y1[4] + 0 = 4
+                Viewport {
+                    origin: Point(2, 2),
+                    width: 10,
+                    height: 3,
+                    scroll: Point::origin(),
+                }.centered(Point(4, 3)),
                 (Point(-1, 2), Point(8, 4)),
             );
         }
 
-        // Test that `Game.viewport_centered` ignores current scroll.
+        // Test that `Viewport_centered` ignores current scroll.
         #[test]
         fn test_viewport_centered_with_scroll() {
-            let mut game = mk_game(
-                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
-                (Some(10), Some(3)),
+            assert_eq!(
+                Viewport {
+                    origin: Point(2, 2),
+                    width: 10,
+                    height: 3,
+                    scroll: Point(1, -5),
+                }.centered(Point(4, 3)),
+                (Point(-1, 2), Point(8, 4))
             );
-            game.scroll(1, -5);
-            assert_eq!(game.viewport_centered(), (Point(-1, 2), Point(8, 4)));
         }
 
         // Test `Game.scroll`.
