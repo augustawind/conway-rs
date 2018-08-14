@@ -54,7 +54,7 @@ pub struct Viewport {
 
 impl Viewport {
     /// Return bounds starting at the lowest x and y values of live Cells present in the Game.
-    pub fn fixed(&self) -> (Point, Point) {
+    pub fn bounds(&self) -> (Point, Point) {
         let Point(x0, y0) = self.origin + self.scroll;
         (
             Point(x0, y0),
@@ -194,7 +194,7 @@ impl Game {
 
     pub fn viewport(&self) -> (Point, Point) {
         match &self.opts.view {
-            View::Fixed => self.viewport.fixed(),
+            View::Fixed => self.viewport.bounds(),
             View::Centered => self.viewport.centered(self.grid.midpoint()),
             _ => unimplemented!(),
         }
@@ -304,7 +304,7 @@ mod test {
                     width: 7,
                     height: 7,
                     scroll: Point::origin(),
-                }.fixed(),
+                }.bounds(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
             );
@@ -319,7 +319,7 @@ mod test {
                     width: 88,
                     height: 12,
                     scroll: Point::origin(),
-                }.fixed(),
+                }.bounds(),
                 (Point(-12, 1), Point(75, 12))
             );
         }
@@ -333,7 +333,7 @@ mod test {
                     width: 10,
                     height: 3,
                     scroll: Point::origin(),
-                }.fixed(),
+                }.bounds(),
                 (Point(2, 2), Point(11, 4)),
             );
         }
@@ -347,7 +347,7 @@ mod test {
                     width: 10,
                     height: 3,
                     scroll: Point(1, -5),
-                }.fixed(),
+                }.bounds(),
                 (Point(3, -3), Point(12, -1))
             );
         }
@@ -412,9 +412,9 @@ mod test {
         fn test_scroll() {
             let mut game = mk_game(vec![Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
             game.scroll_to(Point(0, 0));
-            assert_eq!(game.viewport.fixed(), (Point(-1, -3), Point(3, 1)));
+            assert_eq!(game.viewport.bounds(), (Point(-1, -3), Point(3, 1)));
             game.scroll(2, -4);
-            assert_eq!(game.viewport.fixed(), (Point(1, -7), Point(5, -3)));
+            assert_eq!(game.viewport.bounds(), (Point(1, -7), Point(5, -3)));
         }
 
         // Test `Game.center_viewport`.
@@ -426,7 +426,7 @@ mod test {
             );
             let expected = game.viewport.centered(game.grid.midpoint());
             game.center_viewport();
-            assert_eq!(game.viewport.fixed(), expected);
+            assert_eq!(game.viewport.bounds(), expected);
         }
 
         // `Game.center_viewport` should account for current scroll.
@@ -439,7 +439,7 @@ mod test {
             game.scroll(-1, 2);
             let expected = game.viewport.centered(game.grid.midpoint());
             game.center_viewport();
-            assert_eq!(game.viewport.fixed(), expected);
+            assert_eq!(game.viewport.bounds(), expected);
         }
     }
 
