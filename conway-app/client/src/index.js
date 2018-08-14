@@ -54,7 +54,7 @@ const CMD_MAP = Object.freeze({
 
 const KEYBOARD_SHORTCUTS = Object.freeze({
     ' ': (client) => client.send(CMD_MAP.toggle()),
-    'n': (client) => client.send(CMD_MAP.step()),
+    'Tab': (client) => client.send(CMD_MAP.step()),
     'ArrowUp': (client) => client.send(CMD_MAP.scroll(0, 5)),
     'ArrowDown': (client) => client.send(CMD_MAP.scroll(0, -5)),
     'ArrowLeft': (client) => client.send(CMD_MAP.scroll(5, 0)),
