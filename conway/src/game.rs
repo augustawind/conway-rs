@@ -361,10 +361,9 @@ mod test {
         fn test_centered_1() {
             assert_eq!(
                 Viewport {
-                    origin: Point(-3, 0),
                     width: 7,
                     height: 7,
-                    scroll: Point::origin(),
+                    ..Default::default()
                 }.centered(Point(0, 1)),
                 (Point(-3, -2), Point(3, 4)),
                 "should expand to fit width/height"
@@ -376,10 +375,9 @@ mod test {
         fn test_centered_2() {
             assert_eq!(
                 Viewport {
-                    origin: Point(-12, 1),
                     width: 88,
                     height: 12,
-                    scroll: Point::origin(),
+                    ..Default::default()
                 }.centered(Point(21, 17)),
                 (Point(-23, 11), Point(64, 22)),
                 "should narrow to fit width/height"
@@ -391,10 +389,9 @@ mod test {
         fn test_centered_3() {
             assert_eq!(
                 Viewport {
-                    origin: Point(2, 2),
                     width: 10,
                     height: 3,
-                    scroll: Point::origin(),
+                    ..Default::default()
                 }.centered(Point(4, 3)),
                 (Point(-1, 2), Point(8, 4)),
             );
@@ -405,10 +402,10 @@ mod test {
         fn test_centered_with_scroll() {
             assert_eq!(
                 Viewport {
-                    origin: Point(2, 2),
                     width: 10,
                     height: 3,
                     scroll: Point(1, -5),
+                    ..Default::default()
                 }.centered(Point(4, 3)),
                 (Point(-1, 2), Point(8, 4))
             );
