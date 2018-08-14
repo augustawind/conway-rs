@@ -77,9 +77,6 @@ pub struct Settings {
     pub delay: Duration,
     pub view: View,
 
-    pub width: Option<u64>,
-    pub height: Option<u64>,
-
     pub char_alive: char,
     pub char_dead: char,
 }
@@ -89,8 +86,6 @@ impl Default for Settings {
         Settings {
             delay: Duration::from_millis(500),
             view: View::Centered,
-            width: Some(10),
-            height: Some(10),
             char_alive: *CHAR_ALIVE,
             char_dead: *CHAR_DEAD,
         }
@@ -101,11 +96,12 @@ impl Default for Settings {
 pub struct GameConfig {
     pub settings: Settings,
     pub pattern: String,
+    pub bounds: (Option<u64>, Option<u64>),
 }
 
 impl GameConfig {
     pub fn build(self) -> Result<Game> {
-        Ok(Game::new(self.pattern.parse()?, self.settings))
+        Ok(Game::new(self.pattern.parse()?, self.settings, self.bounds))
     }
 
     pub fn from_json(s: &str) -> Result<Self> {
@@ -135,17 +131,6 @@ impl GameConfig {
 
                 view: matches.value_of("view").unwrap().parse()?,
 
-                width: matches
-                    .value_of("width")
-                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
-                    .transpose()
-                    .chain_err(|| "failed to parse integer from 'width'")?,
-                height: matches
-                    .value_of("height")
-                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
-                    .transpose()
-                    .chain_err(|| "failed to parse integer from 'height")?,
-
                 char_alive: matches
                     .value_of("live_char")
                     .unwrap()
@@ -167,6 +152,18 @@ impl GameConfig {
                         .to_string()
                 }
             },
+            bounds: (
+                matches
+                    .value_of("width")
+                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
+                    .transpose()
+                    .chain_err(|| "failed to parse integer from 'width'")?,
+                matches
+                    .value_of("height")
+                    .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
+                    .transpose()
+                    .chain_err(|| "failed to parse integer from 'height")?,
+            ),
         };
 
         Ok(conf)

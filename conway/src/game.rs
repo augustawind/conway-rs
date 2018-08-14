@@ -118,16 +118,17 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(grid: Grid, opts: Settings) -> Game {
+    pub fn new(grid: Grid, opts: Settings, bounds: (Option<u64>, Option<u64>)) -> Game {
         let mut swap = grid.clone();
         swap.clear();
 
         let (origin, Point(x1, y1)) = grid.bounds();
+        let (width, height) = bounds;
 
         let viewport = Viewport {
             origin,
-            width: opts.width.unwrap_or((x1 - origin.0 + 1) as u64),
-            height: opts.height.unwrap_or((y1 - origin.1 + 1) as u64),
+            width: width.unwrap_or((x1 - origin.0 + 1) as u64),
+            height: height.unwrap_or((y1 - origin.1 + 1) as u64),
             scroll: Point::origin(),
         };
 
@@ -244,10 +245,10 @@ mod test {
         Game::new(
             Grid::new(cells),
             Settings {
-                width,
-                height,
                 ..Default::default()
             },
+            width,
+            height,
         )
     }
 

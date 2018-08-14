@@ -138,12 +138,11 @@ impl Server {
             Settings {
                 delay: Duration::from_millis(100),
                 view: View::Fixed,
-                width: Some(50),
-                height: Some(50),
                 char_alive: 'x',
                 char_dead: '.',
                 ..Default::default()
             },
+            (Some(50), Some(50)),
         );
         Server {
             out,

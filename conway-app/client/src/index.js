@@ -165,28 +165,32 @@ window.onload = function() {
             inline: 'nearest',
         });
 
-      // Build the Settings object.
-      // Use hardcoded values for `char_alive` and `char_dead`.
+        // Build the Settings object.
+        // Use hardcoded values for `char_alive` and `char_dead`.
         const settings = { char_alive: CHAR_ALIVE, char_dead: CHAR_DEAD };
-
-      // Compute width and height to fit containing element.
-        const fontSize = parseFloat(getComputedStyle($grid).getPropertyValue('font-size'));
-        settings.width = Math.ceil($grid.clientWidth / (fontSize * 0.61));
-        settings.height = Math.ceil($grid.clientHeight / (fontSize * 0.51));
 
         const fields = event.target.elements;
 
-      // Fetch `delay` from form and turn it into Duration json repr. for the backend.
+        // Fetch `delay` from form and turn it into Duration json repr. for the backend.
         const delay_ms = fields['tick-delay'].value;
         const delay_secs = Math.trunc(delay_ms / 1000);
         const delay_nanos = (delay_ms - (delay_secs * 1000)) * 1000000;
         settings.delay = { secs: delay_secs, nanos: delay_nanos };
 
-      // Fetch `view` from form.
+        // Fetch `view` from form.
         settings.view = fields['view'].value;
 
-      // Send message.
-        const payload = { pattern: $gridField.value, settings: settings };
+        // Compute width and height to fit containing element.
+        const fontSize = parseFloat(getComputedStyle($grid).getPropertyValue('font-size'));
+        const width = Math.ceil($grid.clientWidth / (fontSize * 0.61));
+        const height = Math.ceil($grid.clientHeight / (fontSize * 0.51));
+
+        // Send message.
+        const payload = {
+            pattern: $gridField.value,
+            settings: settings,
+            bounds: [width, height],
+        };
         client.send(CMD_MAP.newGrid(payload));
     };
 
