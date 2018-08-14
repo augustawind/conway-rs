@@ -89,6 +89,11 @@ impl Grid {
      * Geometry
      */
 
+    pub fn midpoint(&self) -> Point {
+        let (Point(x0, y0), Point(x1, y1)) = self.bounds();
+        Point((x0 + x1 + 1) / 2, (y0 + y1 + 1) / 2)
+    }
+
     // Return the lowest and highest X and Y coordinates represented in the Grid.
     pub fn bounds(&self) -> (Point, Point) {
         let mut cells = self.cells.iter();
@@ -108,7 +113,7 @@ impl Grid {
             }
             (Point(x0, y0), Point(x1, y1))
         } else {
-            (Default::default(), Default::default())
+            (Point::origin(), Point::origin())
         }
     }
 }
@@ -241,17 +246,29 @@ mod test {
         use super::*;
 
         #[test]
-        fn test_bounds_1() {
+        fn test_midpoint() {
             assert_eq!(
-                Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],).bounds(),
-                (Point(-3, 0), Point(2, 1))
+                Grid::new(vec![Point(-2, -1), Point(2, 1)]).midpoint(),
+                Point(0, 0),
+            );
+            assert_eq!(
+                Grid::new(vec![Point(0, -6), Point(8, 2)]).midpoint(),
+                Point(4, -1),
+            );
+            assert_eq!(
+                Grid::new(vec![Point(2, 7), Point(-5, 6)]).midpoint(),
+                Point(-1, 7),
             );
         }
 
         #[test]
-        fn test_bounds_2() {
+        fn test_bounds() {
             assert_eq!(
-                Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)],).bounds(),
+                Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)]).bounds(),
+                (Point(-3, 0), Point(2, 1))
+            );
+            assert_eq!(
+                Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)]).bounds(),
                 (Point(-12, 1), Point(53, 33))
             );
         }

@@ -52,6 +52,25 @@ pub struct Viewport {
     height: u64,
 }
 
+impl Viewport {
+    /// Return bounds starting at the lowest x and y values of live Cells present in the Game.
+    pub fn fixed(&self) -> (Point, Point) {
+        let Point(x0, y0) = self.origin + self.scroll;
+        (
+            Point(x0, y0),
+            Point(x0 + self.width as i64 - 1, y0 + self.height as i64 - 1),
+        )
+    }
+
+    /// Return bounds centered around existing live Cells.
+    pub fn centered(&self, midpoint: Point) -> (Point, Point) {
+        let Point(mx, my) = midpoint;
+        let (dx0, dx1) = split_int(self.width as i64);
+        let (dy0, dy1) = split_int(self.height as i64);
+        (Point(mx - dx0, my - dy0), Point(mx + dx1 - 1, my + dy1 - 1))
+    }
+}
+
 pub struct GameIter<'a> {
     game: &'a mut Game,
     with_delay: bool,
@@ -175,34 +194,14 @@ impl Game {
 
     pub fn viewport(&self) -> (Point, Point) {
         match &self.opts.view {
-            View::Fixed => self.viewport_fixed(),
+            View::Fixed => self.viewport.fixed(),
             View::Centered => self.viewport_centered(),
             _ => unimplemented!(),
         }
     }
 
-    /// Return a Viewport starting at the lowest x and y values of live Cells present in the Game.
-    pub fn viewport_fixed(&self) -> (Point, Point) {
-        let Point(x0, y0) = self.viewport.origin + self.viewport.scroll;
-        let p1 = Point(
-            x0 + self.viewport.width as i64 - 1,
-            y0 + self.viewport.height as i64 - 1,
-        );
-        (Point(x0, y0), p1)
-    }
-
-    /// Return a Viewport centered around existing live Cells.
     pub fn viewport_centered(&self) -> (Point, Point) {
-        let (Point(x0, y0), Point(x1, y1)) = self.grid.bounds();
-        let (width, height) = (x1 - x0 + 1, y1 - y0 + 1);
-
-        let (dx, dy) = (
-            self.viewport.width as i64 - width,
-            self.viewport.height as i64 - height,
-        );
-
-        let ((dx0, dx1), (dy0, dy1)) = (split_int(dx), split_int(dy));
-        (Point(x0 - dx0, y0 - dy0), Point(x1 + dx1, y1 + dy1))
+        self.viewport.centered(self.grid.midpoint())
     }
 
     /// Return whether the Game is over. This happens with the Grid is empty.
@@ -300,7 +299,7 @@ mod test {
     mod viewport {
         use super::*;
 
-        // Test `Game.viewport_fixed`.
+        // Test `Viewport.fixed`.
         #[test]
         fn test_viewport_fixed_1() {
             let mut game = mk_game(
@@ -309,7 +308,7 @@ mod test {
             );
             game.scroll_to(Point::origin());
             assert_eq!(
-                game.viewport_fixed(),
+                game.viewport.fixed(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
             );
@@ -323,7 +322,7 @@ mod test {
                 (Some(88), Some(12)),
             );
             game.scroll_to(Point::origin());
-            assert_eq!(game.viewport_fixed(), (Point(-12, 1), Point(75, 12)));
+            assert_eq!(game.viewport.fixed(), (Point(-12, 1), Point(75, 12)));
         }
 
         // ...
@@ -334,10 +333,10 @@ mod test {
                 (Some(10), Some(3)),
             );
             game.scroll_to(Point::origin());
-            assert_eq!(game.viewport_fixed(), (Point(2, 2), Point(11, 4)),);
+            assert_eq!(game.viewport.fixed(), (Point(2, 2), Point(11, 4)),);
         }
 
-        // Test that `Game.viewport_fixed` adjusts for scroll.
+        // Test that `Viewport.fixed` adjusts for scroll.
         #[test]
         fn test_viewport_fixed_with_scroll() {
             let mut game = mk_game(
@@ -346,7 +345,7 @@ mod test {
             );
             game.scroll_to(Point::origin());
             game.scroll(1, -5);
-            assert_eq!(game.viewport_fixed(), (Point(3, -3), Point(12, -1)));
+            assert_eq!(game.viewport.fixed(), (Point(3, -3), Point(12, -1)));
         }
 
         // Test `Game.viewport_centered`.
@@ -358,7 +357,7 @@ mod test {
                     (Some(7), Some(7)),
                 ).viewport_centered(),
                 (Point(-3, -2), Point(3, 4)),
-                "should pad content to fit width/height"
+                "should expand to fit width/height"
             );
         }
 
@@ -375,7 +374,8 @@ mod test {
                 ).viewport_centered(),
                 // x0[-12] - 11 = -23 // x1[53] + 11 = 64
                 // y0[1] + 10 = 11 // y1[33] - 11 = 22
-                (Point(-23, 11), Point(64, 22))
+                (Point(-23, 11), Point(64, 22)),
+                "should narrow to fit width/height"
             );
         }
 
@@ -409,8 +409,10 @@ mod test {
         #[test]
         fn test_scroll() {
             let mut game = mk_game(vec![Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
+            game.scroll_to(Point(0, 0));
+            assert_eq!(game.viewport.fixed(), (Point(-1, -3), Point(3, 1)));
             game.scroll(2, -4);
-            assert_eq!(game.viewport_fixed(), (Point(1, -7), Point(5, -3)));
+            assert_eq!(game.viewport.fixed(), (Point(1, -7), Point(5, -3)));
         }
 
         // Test `Game.center_viewport`.
@@ -422,7 +424,7 @@ mod test {
             );
             let expected = game.viewport_centered();
             game.center_viewport();
-            assert_eq!(game.viewport_fixed(), expected);
+            assert_eq!(game.viewport.fixed(), expected);
         }
 
         // `Game.center_viewport` should account for current scroll.
@@ -435,7 +437,7 @@ mod test {
             game.scroll(-1, 2);
             let expected = game.viewport_centered();
             game.center_viewport();
-            assert_eq!(game.viewport_fixed(), expected);
+            assert_eq!(game.viewport.fixed(), expected);
         }
     }
 
