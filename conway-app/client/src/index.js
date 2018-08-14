@@ -54,6 +54,12 @@ const CMD_MAP = Object.freeze({
 
 const KEYBOARD_SHORTCUTS = Object.freeze({
     ' ': (client) => client.send(CMD_MAP.toggle()),
+    'n': (client) => client.send(CMD_MAP.step()),
+    'ArrowUp': (client) => client.send(CMD_MAP.scroll(0, 5)),
+    'ArrowDown': (client) => client.send(CMD_MAP.scroll(0, -5)),
+    'ArrowLeft': (client) => client.send(CMD_MAP.scroll(5, 0)),
+    'ArrowRight': (client) => client.send(CMD_MAP.scroll(-5, 0)),
+    'c': (client) => client.send(CMD_MAP.center()),
 });
 
 function StatusBox() {
@@ -228,8 +234,15 @@ window.onload = function() {
         };
     });
     document.addEventListener('keydown', function(event) {
-        if (event.key === ' ')
+        switch (event.key) {
+        case ' ':
+        case 'ArrowUp':
+        case 'ArrowDown':
+        case 'ArrowLeft':
+        case 'ArrowRight':
             event.preventDefault();
+            break;
+        }
     });
     document.addEventListener('keyup', function(event) {
         const handleKey = KEYBOARD_SHORTCUTS[event.key];
