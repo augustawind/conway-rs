@@ -205,7 +205,7 @@ impl ws::Handler for Server {
                 self.paused = true;
             }
             Ok(Cmd::Scroll(dx, dy)) => {
-                game.scroll(dx, dy);
+                game.viewport.scroll(dx, dy);
                 queue.push(Message::Grid(game.draw()));
             }
             Ok(Cmd::Center) => {

@@ -46,10 +46,10 @@ impl fmt::Display for View {
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Viewport {
-    origin: Point,
-    scroll: Point,
-    width: u64,
-    height: u64,
+    pub origin: Point,
+    pub scroll: Point,
+    pub width: u64,
+    pub height: u64,
 }
 
 impl Viewport {
@@ -63,11 +63,19 @@ impl Viewport {
     }
 
     /// Return bounds centered around existing live Cells.
-    pub fn centered(&self, midpoint: Point) -> (Point, Point) {
-        let Point(mx, my) = midpoint;
+    pub fn centered(&self, Point(x, y): Point) -> (Point, Point) {
         let (dx0, dx1) = split_int(self.width as i64);
         let (dy0, dy1) = split_int(self.height as i64);
-        (Point(mx - dx0, my - dy0), Point(mx + dx1 - 1, my + dy1 - 1))
+        (Point(x - dx0, y - dy0), Point(x + dx1 - 1, y + dy1 - 1))
+    }
+
+    pub fn center(&mut self, point: Point) {
+        let (origin, _) = self.centered(point);
+        self.scroll = origin - self.origin;
+    }
+
+    pub fn scroll(&mut self, dx: i64, dy: i64) {
+        self.scroll += Point(dx, dy);
     }
 }
 
@@ -106,7 +114,7 @@ pub struct Game {
     grid: Grid,
     swap: Grid,
     opts: Settings,
-    viewport: Viewport,
+    pub viewport: Viewport,
 }
 
 impl Game {
@@ -129,7 +137,7 @@ impl Game {
             opts,
             viewport,
         };
-        game.center_viewport();
+        game.viewport.center(game.grid.midpoint());
         game
     }
 
@@ -182,14 +190,8 @@ impl Game {
         self.viewport.scroll += Point(dx, dy);
     }
 
-    pub fn scroll_to(&mut self, point: Point) {
-        self.viewport.scroll = point;
-    }
-
     pub fn center_viewport(&mut self) {
-        let (origin, _) = self.viewport.centered(self.grid.midpoint());
-        let Point(x, y) = origin - self.viewport.origin;
-        self.viewport.scroll = Point(x, y);
+        self.viewport.center(self.grid.midpoint());
     }
 
     pub fn viewport(&self) -> (Point, Point) {
@@ -411,7 +413,7 @@ mod test {
         #[test]
         fn test_scroll() {
             let mut game = mk_game(vec![Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
-            game.scroll_to(Point(0, 0));
+            game.viewport.scroll = Point::origin();
             assert_eq!(game.viewport.bounds(), (Point(-1, -3), Point(3, 1)));
             game.scroll(2, -4);
             assert_eq!(game.viewport.bounds(), (Point(1, -7), Point(5, -3)));
