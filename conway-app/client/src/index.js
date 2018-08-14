@@ -97,7 +97,9 @@ function GameClient(spec) {
             console.log('Error communicating with game server: ' + error);
         },
         onmessage(event) {
-            let messages = JSON.parse(event.data);
+            let then = Date.now(),
+                delayMs = 500,
+                messages = JSON.parse(event.data);
 
             messages.forEach(function(msg) {
                 switch (msg.kind) {
@@ -116,7 +118,10 @@ function GameClient(spec) {
                 }
             });
 
-            send(CMD_MAP.ping());
+            delayMs -= (Date.now() - then);
+            setTimeout(function() {
+                send(CMD_MAP.ping());
+            }, delayMs);
         }
     });
 
