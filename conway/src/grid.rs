@@ -90,7 +90,7 @@ impl Grid {
      */
 
     // Return the lowest and highest X and Y coordinates represented in the Grid.
-    pub fn get_bounds(&self) -> (Point, Point) {
+    pub fn bounds(&self) -> (Point, Point) {
         let mut cells = self.cells.iter();
         if let Some(&Point(x, y)) = cells.next() {
             let ((mut x0, mut y0), (mut x1, mut y1)) = ((x, y), (x, y));
@@ -241,18 +241,17 @@ mod test {
         use super::*;
 
         #[test]
-        fn test_get_bounds_1() {
+        fn test_bounds_1() {
             assert_eq!(
-                Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],)
-                    .get_bounds(),
+                Grid::new(vec![Point(2, 1), Point(-3, 0), Point(-2, 1), Point(-2, 0)],).bounds(),
                 (Point(-3, 0), Point(2, 1))
             );
         }
 
         #[test]
-        fn test_get_bounds_2() {
+        fn test_bounds_2() {
             assert_eq!(
-                Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)],).get_bounds(),
+                Grid::new(vec![Point(53, 4), Point(2, 1), Point(-12, 33)],).bounds(),
                 (Point(-12, 1), Point(53, 33))
             );
         }
