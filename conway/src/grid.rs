@@ -6,6 +6,7 @@ use {Error, ErrorKind, Result};
 
 pub const READ_CHAR_ALIVE: char = 'x';
 pub const READ_CHAR_DEAD: char = '.';
+pub const COMMENT_CHAR: char = '#';
 
 static DIRECTIONS: &'static [(i64, i64)] = &[
     (-1, -1),
@@ -101,6 +102,7 @@ impl Grid {
      * Geometry
      */
 
+    /// Return the Point closest to the center of the Grid.
     pub fn midpoint(&self) -> Point {
         let (Point(x0, y0), Point(x1, y1)) = self.bounds();
         Point((x0 + x1 + 1) / 2, (y0 + y1 + 1) / 2)
@@ -140,17 +142,20 @@ impl FromStr for Grid {
         for (y, line) in s
             .trim()
             .lines()
-            .filter(|line| !line.starts_with('#'))
+            .filter(|line| !line.starts_with(COMMENT_CHAR))
             .enumerate()
         {
             for (x, ch) in line.chars().enumerate() {
-                // Living Points are added to the Grid.
-                if ch == READ_CHAR_ALIVE {
-                    cells.push(Point(x as i64, y as i64));
-                // Dead Points are ignored, and any other symbol is an error.
-                } else if ch != READ_CHAR_DEAD {
-                    bail!(ErrorKind::ParseGrid(format!("unknown character: '{}'", ch)));
-                }
+                match ch {
+                    // Living Points are added to the Grid.
+                    READ_CHAR_ALIVE => cells.push(Point(x as i64, y as i64)),
+                    // Dead Points are ignored.
+                    READ_CHAR_DEAD => (),
+                    // Skip the rest of the line after a comment char.
+                    COMMENT_CHAR => break,
+                    // Anything else is invalid.
+                    _ => bail!(ErrorKind::ParseGrid(format!("unknown character: '{}'", ch))),
+                };
             }
         }
 
@@ -168,10 +173,20 @@ mod test {
 
         #[test]
         fn test_from_str() {
+            // Should look like this after comments are removed:
+            // 110
+            // 001
+            // 010
             let grid: Grid = vec![
-                format!("{}{}", READ_CHAR_ALIVE, READ_CHAR_ALIVE),
+                " \t".to_string(), // Leading whitespace should be removed.
+                format!( // Everything after an inline comment should be ignored.
+                    "{}{}{}{}",
+                    READ_CHAR_ALIVE, READ_CHAR_ALIVE, COMMENT_CHAR, READ_CHAR_ALIVE
+                ),
                 format!("{}{}{}", READ_CHAR_DEAD, READ_CHAR_DEAD, READ_CHAR_ALIVE),
+                format!("{}hello world", COMMENT_CHAR), // Line comments should be skipped.
                 format!("{}{}{}", READ_CHAR_DEAD, READ_CHAR_ALIVE, READ_CHAR_DEAD),
+                "\n\t \n".to_string(), // Trailing whitespace should be ignored.
             ]
             .join("\n")
             .parse()
