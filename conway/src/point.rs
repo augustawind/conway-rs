@@ -1,11 +1,10 @@
 use std::fmt;
-use std::num::ParseIntError;
 use std::ops;
 use std::str::FromStr;
 
 use {Error, ErrorKind, Result};
 
-/// A Point is a point on the `Grid`.
+/// A Point represents an (x, y) coordinate on the `Grid`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point(pub i64, pub i64);
 
@@ -65,30 +64,35 @@ impl FromStr for Point {
         let (lparen, rest) = s.trim().split_at(1);
         if lparen != "(" {
             bail!(ErrorKind::ParsePoint(format!(
-                "unexpected character '{}'",
+                "expected open paren '(', got '{}'",
                 lparen
             )));
         }
         let (rest, rparen) = rest.split_at(rest.len() - 1);
         if rparen != ")" {
-            bail!(ErrorKind::ParsePoint(format!(
-                "unexpected character '{}'",
-                rparen
-            )));
+            bail!(ErrorKind::ParsePoint(
+                "expected closing paren ')'".to_string()
+            ));
         }
         let mut nums = rest.split(',');
-        let x: i64 = nums
-            .next()
-            .ok_or_else(|| ErrorKind::ParsePoint(format!("missing value for x")))?
-            .trim()
-            .parse()
-            .map_err(|e: ParseIntError| ErrorKind::ParsePoint(e.to_string()))?;
-        let y: i64 = nums
-            .next()
-            .ok_or_else(|| ErrorKind::ParsePoint(format!("missing value for y")))?
-            .trim()
-            .parse()
-            .map_err(|e: ParseIntError| ErrorKind::ParsePoint(e.to_string()))?;
+        let x: i64 = {
+            let s = nums
+                .next()
+                .ok_or_else(|| ErrorKind::ParsePoint(format!("missing x and y values")))?
+                .trim();
+            s.parse().map_err(|_| {
+                ErrorKind::ParsePoint(format!("'{}': invalid value for x: expected an int", s))
+            })?
+        };
+        let y: i64 = {
+            let s = nums
+                .next()
+                .ok_or_else(|| ErrorKind::ParsePoint(format!("missing value for y")))?
+                .trim();
+            s.parse().map_err(|_| {
+                ErrorKind::ParsePoint(format!("'{}': invalid value for y: expected an int", s))
+            })?
+        };
         Ok(Point(x, y))
     }
 }
@@ -112,5 +116,9 @@ mod test {
     #[test]
     fn test_from_str() {
         assert_eq!("(-4, 9)".parse::<Point>().unwrap(), Point(-4, 9));
+        assert!("-4, 9)".parse::<Point>().is_err());
+        assert!("(-4, 9".parse::<Point>().is_err());
+        assert!("(x, 9)".parse::<Point>().is_err());
+        assert!("(4.1, 9)".parse::<Point>().is_err());
     }
 }
