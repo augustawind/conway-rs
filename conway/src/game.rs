@@ -241,14 +241,13 @@ fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
 mod test {
     use super::*;
 
-    fn mk_game(cells: Vec<Point>, (width, height): (Option<u64>, Option<u64>)) -> Game {
+    fn mk_game(cells: Vec<Point>, bounds: (Option<u64>, Option<u64>)) -> Game {
         Game::new(
             Grid::new(cells),
             Settings {
                 ..Default::default()
             },
-            width,
-            height,
+            bounds,
         )
     }
 
