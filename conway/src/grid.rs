@@ -7,6 +7,17 @@ use {Error, ErrorKind, Result};
 pub const READ_CHAR_ALIVE: char = 'x';
 pub const READ_CHAR_DEAD: char = '.';
 
+static DIRECTIONS: &'static [(i64, i64)] = &[
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
+
 /// A Grid represents the physical world in which Conway's Game of Life takes place.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Grid {
@@ -14,10 +25,17 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// Create a new Grid.
-    pub fn new(cells: Vec<Point>) -> Self {
+    /// Create a new Grid with the given cells.
+    pub fn new<I: IntoIterator<Item = Point>>(cells: I) -> Self {
         Grid {
             cells: cells.into_iter().collect(),
+        }
+    }
+
+    /// Create an empty Grid.
+    pub fn empty() -> Self {
+        Grid {
+            cells: HashSet::new(),
         }
     }
 
@@ -48,16 +66,10 @@ impl Grid {
     /// Return all 8 Points that are directly adjacent to the given Point.
     pub fn adjacent_cells(&self, cell: &Point) -> HashSet<Point> {
         let Point(x, y) = cell;
-        let mut cells = HashSet::with_capacity(8);
-        for dx in -1..=1 {
-            for dy in -1..=1 {
-                if dx == 0 && dy == 0 {
-                    continue;
-                }
-                cells.insert(Point(x + dx, y + dy));
-            }
-        }
-        cells
+        DIRECTIONS
+            .iter()
+            .map(|(dx, dy)| Point(x + dx, y + dy))
+            .collect()
     }
 
     /// Return whether the Grid is empty.

@@ -119,8 +119,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(grid: Grid, opts: Settings, bounds: (Option<u64>, Option<u64>)) -> Game {
-        let mut swap = grid.clone();
-        swap.clear();
+        let swap = Grid::empty();
 
         let (origin, Point(x1, y1)) = grid.bounds();
         let (width, height) = bounds;
@@ -224,10 +223,6 @@ impl Game {
             }
         }
     }
-
-    pub fn reset_grid(&mut self, grid: Grid) {
-        self.grid = grid;
-    }
 }
 
 // Split an integer into 2 halves that always add up to the given number.
@@ -242,13 +237,7 @@ mod test {
     use super::*;
 
     fn mk_game(cells: Vec<Point>, bounds: (Option<u64>, Option<u64>)) -> Game {
-        Game::new(
-            Grid::new(cells),
-            Settings {
-                ..Default::default()
-            },
-            bounds,
-        )
+        Game::new(Grid::new(cells), Settings::default(), bounds)
     }
 
     // Viewport width/height should be taken from Settings if given.
