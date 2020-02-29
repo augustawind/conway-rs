@@ -24,7 +24,7 @@ lazy_static! {
         "glider" => include_str!("../sample_patterns/glider"),
         "toad" => include_str!("../sample_patterns/toad"),
     };
-    static ref SAMPLE_CHOICES: Vec<&'static str> = SAMPLE_PATTERNS.keys().map(|k| *k).collect();
+    static ref SAMPLE_CHOICES: Vec<&'static str> = SAMPLE_PATTERNS.keys().copied().collect();
     pub static ref CHAR_ALIVE: char = DEFAULT_CHAR_ALIVE.parse().unwrap();
     pub static ref CHAR_DEAD: char = DEFAULT_CHAR_DEAD.parse().unwrap();
 }
