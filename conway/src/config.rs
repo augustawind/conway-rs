@@ -10,7 +10,7 @@ use clap::ArgMatches;
 use serde_json;
 
 use game::{Game, View};
-use {Result, ResultExt};
+use {ErrorKind, Result, ResultExt};
 
 const VIEW_CHOICES: &[&str] = &["centered", "fixed", "follow"];
 const DEFAULT_CHAR_ALIVE: &str = "#";
@@ -127,7 +127,7 @@ impl GameConfig {
                         .value_of("delay")
                         .unwrap()
                         .parse()
-                        .chain_err(|| "failed to parse integer from 'delay")?,
+                        .map_err(|_| ErrorKind::ParseArg("delay", "an integer"))?,
                 ),
 
                 view: matches.value_of("view").unwrap().parse()?,
@@ -136,12 +136,12 @@ impl GameConfig {
                     .value_of("live_char")
                     .unwrap()
                     .parse()
-                    .chain_err(|| "failed to parse character from 'live_char'")?,
+                    .map_err(|_| ErrorKind::ParseArg("live_char", "a character"))?,
                 char_dead: matches
                     .value_of("dead_char")
                     .unwrap()
                     .parse()
-                    .chain_err(|| "failed to parse character from 'dead_char'")?,
+                    .map_err(|_| ErrorKind::ParseArg("dead_char", "a character"))?,
             },
             pattern: {
                 if let Some(file) = matches.value_of("file") {
@@ -158,12 +158,12 @@ impl GameConfig {
                     .value_of("width")
                     .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
                     .transpose()
-                    .chain_err(|| "failed to parse integer from 'width'")?,
+                    .map_err(|_| ErrorKind::ParseArg("width", "an integer"))?,
                 matches
                     .value_of("height")
                     .and_then(|s| if s == "auto" { None } else { Some(s.parse()) })
                     .transpose()
-                    .chain_err(|| "failed to parse integer from 'height")?,
+                    .map_err(|_| ErrorKind::ParseArg("height", "an integer"))?,
             ),
         };
 

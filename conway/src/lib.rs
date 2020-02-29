@@ -30,12 +30,16 @@ mod errors {
     error_chain! {
         errors {
             ParseGrid(s: String) {
-                description("failed to parse grid")
-                display("failed to parse grid: {}", s)
+                description("failed to parse Grid"),
+                display("failed to parse Grid: {}", s),
             }
             ParsePoint(s: String) {
-                description("failed to parse Point")
-                display("failed to parse Point: {}", s)
+                description("failed to parse Point"),
+                display("failed to parse Point: {}", s),
+            }
+            ParseArg(arg: &'static str, expected: &'static str) {
+                description("failed to parse argument"),
+                display("failed to parse argument '{}': expected {}", arg, expected),
             }
         }
 
