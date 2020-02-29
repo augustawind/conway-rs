@@ -167,7 +167,7 @@ impl Server {
 
 impl ws::Handler for Server {
     fn on_open(&mut self, shake: ws::Handshake) -> ws::Result<()> {
-        if let Some(addr) = try!(shake.remote_addr()) {
+        if let Some(addr) = shake.remote_addr()? {
             debug!("Connection with {} now open", addr);
         }
         let &mut State { ref mut queue, .. }: &mut State = &mut *self.state.lock().unwrap();

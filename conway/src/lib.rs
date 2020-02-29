@@ -1,5 +1,4 @@
 #![macro_use]
-#![feature(transpose_result)]
 #![recursion_limit = "1024"]
 
 #[macro_use]

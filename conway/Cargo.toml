@@ -6,7 +6,7 @@ authors = ["Dustin Rohde <dustin.rohde@gmail.com>"]
 [dependencies]
 clap = "2.32.0"
 error-chain = "0.12.*"
-lazy_static = "1.0.*"
+lazy_static = "1"
 maplit = "1.0.1"
 num-integer = "0.1.39"
 serde = "1.0.*"
