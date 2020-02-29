@@ -244,14 +244,18 @@ fn split_int<T: Integer + Copy>(n: T) -> (T, T) {
 mod test {
     use super::*;
 
-    fn mk_game(cells: Vec<Point>, bounds: (Option<u64>, Option<u64>)) -> Game {
-        Game::new(Grid::new(cells), Settings::default(), bounds)
+    fn mk_game(cells: &[Point], bounds: (Option<u64>, Option<u64>)) -> Game {
+        Game::new(
+            Grid::new(cells.into_iter().cloned()),
+            Settings::default(),
+            bounds,
+        )
     }
 
     // Viewport width/height should be taken from Settings if given.
     #[test]
     fn test_size_provided() {
-        let game = mk_game(vec![Point::origin(), Point(5, 5)], (Some(8), Some(8)));
+        let game = mk_game(&[Point::origin(), Point(5, 5)], (Some(8), Some(8)));
         assert_eq!(game.viewport.width, 8);
         assert_eq!(game.viewport.height, 8);
     }
@@ -259,7 +263,7 @@ mod test {
     // Viewport width/height should be derived from the Grid if not given in Settings.
     #[test]
     fn test_size_auto() {
-        let game = mk_game(vec![Point::origin(), Point(5, 5)], (None, None));
+        let game = mk_game(&[Point::origin(), Point(5, 5)], (None, None));
         assert_eq!(game.viewport.width, 6);
         assert_eq!(game.viewport.height, 6);
     }
@@ -267,7 +271,7 @@ mod test {
     // Test `Game.survive`.
     #[test]
     fn test_survives() {
-        let game = mk_game(vec![Point(1, 0), Point(1, 1), Point(1, 2)], (None, None));
+        let game = mk_game(&[Point(1, 0), Point(1, 1), Point(1, 2)], (None, None));
         assert!(
             game.survives(&Point(1, 1)),
             "a live cell with 2 live neighbors should survive"
@@ -417,7 +421,7 @@ mod test {
         // Test `Game.scroll`.
         #[test]
         fn test_scroll() {
-            let mut game = mk_game(vec![Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
+            let mut game = mk_game(&[Point(3, 0), Point(-1, 1), Point(0, -3)], (None, None));
             game.viewport.scroll = Point::origin();
             assert_eq!(game.viewport.bounds(), (Point(-1, -3), Point(3, 1)));
             game.scroll(2, -4);
@@ -428,7 +432,7 @@ mod test {
         #[test]
         fn test_center_viewport() {
             let mut game = mk_game(
-                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                &[Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
                 (Some(10), Some(3)),
             );
             let expected = game.viewport.centered(game.grid.midpoint());
@@ -440,7 +444,7 @@ mod test {
         #[test]
         fn test_center_viewport_with_scroll() {
             let mut game = mk_game(
-                vec![Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
+                &[Point(2, 3), Point(3, 3), Point(5, 4), Point(4, 2)],
                 (Some(10), Some(3)),
             );
             game.scroll(-1, 2);
