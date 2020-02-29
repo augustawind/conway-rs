@@ -306,7 +306,8 @@ mod test {
                     width: 7,
                     height: 7,
                     scroll: Point::origin(),
-                }.bounds(),
+                }
+                .bounds(),
                 (Point(-3, 0), Point(3, 6)),
                 "should pad content to fit width/height"
             );
@@ -321,7 +322,8 @@ mod test {
                     width: 88,
                     height: 12,
                     scroll: Point::origin(),
-                }.bounds(),
+                }
+                .bounds(),
                 (Point(-12, 1), Point(75, 12))
             );
         }
@@ -335,7 +337,8 @@ mod test {
                     width: 10,
                     height: 3,
                     scroll: Point::origin(),
-                }.bounds(),
+                }
+                .bounds(),
                 (Point(2, 2), Point(11, 4)),
             );
         }
@@ -349,7 +352,8 @@ mod test {
                     width: 10,
                     height: 3,
                     scroll: Point(1, -5),
-                }.bounds(),
+                }
+                .bounds(),
                 (Point(3, -3), Point(12, -1))
             );
         }
@@ -362,7 +366,8 @@ mod test {
                     width: 7,
                     height: 7,
                     ..Default::default()
-                }.centered(Point(0, 1)),
+                }
+                .centered(Point(0, 1)),
                 (Point(-3, -2), Point(3, 4)),
                 "should expand to fit width/height"
             );
@@ -376,7 +381,8 @@ mod test {
                     width: 88,
                     height: 12,
                     ..Default::default()
-                }.centered(Point(21, 17)),
+                }
+                .centered(Point(21, 17)),
                 (Point(-23, 11), Point(64, 22)),
                 "should narrow to fit width/height"
             );
@@ -390,7 +396,8 @@ mod test {
                     width: 10,
                     height: 3,
                     ..Default::default()
-                }.centered(Point(4, 3)),
+                }
+                .centered(Point(4, 3)),
                 (Point(-1, 2), Point(8, 4)),
             );
         }
@@ -404,7 +411,8 @@ mod test {
                     height: 3,
                     scroll: Point(1, -5),
                     ..Default::default()
-                }.centered(Point(4, 3)),
+                }
+                .centered(Point(4, 3)),
                 (Point(-1, 2), Point(8, 4))
             );
         }

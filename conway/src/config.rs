@@ -18,7 +18,7 @@ const DEFAULT_CHAR_DEAD: &str = "-";
 
 lazy_static! {
     static ref SAMPLE_DIR: &'static Path = Path::new("./sample_patterns");
-    pub static ref SAMPLE_PATTERNS: BTreeMap<&'static str, &'static str> = btreemap!{
+    pub static ref SAMPLE_PATTERNS: BTreeMap<&'static str, &'static str> = btreemap! {
         "beacon" => include_str!("../sample_patterns/blinker"),
         "blinker" => include_str!("../sample_patterns/blinker"),
         "glider" => include_str!("../sample_patterns/glider"),
@@ -68,7 +68,8 @@ where
             default_value(DEFAULT_CHAR_DEAD)
             env[CONWAY_DEAD_CHAR]
             "character used to render dead cells")
-    ).get_matches_from(args)
+    )
+    .get_matches_from(args)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -160,9 +160,10 @@ mod test {
                 format!("{}{}", READ_CHAR_ALIVE, READ_CHAR_ALIVE),
                 format!("{}{}{}", READ_CHAR_DEAD, READ_CHAR_DEAD, READ_CHAR_ALIVE),
                 format!("{}{}{}", READ_CHAR_DEAD, READ_CHAR_ALIVE, READ_CHAR_DEAD),
-            ].join("\n")
-                .parse()
-                .unwrap();
+            ]
+            .join("\n")
+            .parse()
+            .unwrap();
 
             assert_eq!(
                 grid.cells,
