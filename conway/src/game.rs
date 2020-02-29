@@ -141,6 +141,9 @@ impl Game {
         game
     }
 
+    /// Return an iterator over the turns of the Game, returning the rendered output of each turn.
+    ///
+    /// Iteration finishes when the Game is over.
     pub fn iter(&mut self) -> GameIter {
         GameIter {
             game: self,
@@ -150,7 +153,7 @@ impl Game {
 
     /// Execute the next turn in the Game of Life.
     ///
-    /// `tick` applies the rules of game to each individual Point, killing some and reviving others.
+    /// Applies the rules of game to each individual cell, killing some and reviving others.
     pub fn tick(&mut self) {
         for cell in self.grid.active_cells() {
             if self.survives(&cell) {
@@ -167,10 +170,12 @@ impl Game {
         self.tick();
     }
 
+    /// Render the Game as a grid of cells.
     pub fn draw(&self) -> String {
         self.draw_viewport(self.viewport())
     }
 
+    /// Render the section of the Game, within the given bounds, as a grid of cells.
     fn draw_viewport(&self, (Point(x0, y0), Point(x1, y1)): (Point, Point)) -> String {
         let mut output = String::new();
         for y in y0..=y1 {
@@ -186,14 +191,17 @@ impl Game {
         output
     }
 
+    /// Shift the Game's viewport by the given x and y deltas.
     pub fn scroll(&mut self, dx: i64, dy: i64) {
         self.viewport.scroll += Point(dx, dy);
     }
 
+    /// Move the Game's viewport to the center of the grid.
     pub fn center_viewport(&mut self) {
         self.viewport.center(self.grid.midpoint());
     }
 
+    /// Calculate and return the lower and upper bounds of the Game's viewport.
     pub fn viewport(&self) -> (Point, Point) {
         match &self.opts.view {
             View::Fixed => self.viewport.bounds(),
@@ -202,13 +210,13 @@ impl Game {
         }
     }
 
-    /// Return whether the Game is over. This happens with the Grid is empty.
+    /// Return whether the Game is over (true if the grid is empty, else false).
     // TODO: make this `is_stablized` and increase functionality.
     pub fn is_over(&self) -> bool {
         self.grid.is_empty()
     }
 
-    /// Survives returns whether the cell at the given Point survives an application of The Rules.
+    /// Return whether the cell at the given Point survives an application of The Rules.
     pub fn survives(&self, cell: &Point) -> bool {
         let live_neighbors = self.grid.live_neighbors(cell);
         if self.grid.is_alive(cell) {
